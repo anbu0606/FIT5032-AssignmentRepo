@@ -1,6 +1,6 @@
 <template>
   <div class="container mt-5">
-    <h2>Register for SportyTribe</h2>
+    <h2>Register for SportyTribe!</h2>
     <form @submit.prevent="handleSubmit" novalidate>
       
       <!-- Name -->
