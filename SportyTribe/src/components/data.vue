@@ -17,6 +17,7 @@ export default {
     }
   },
   mounted() {
+    
     // Check if events exist in localStorage
     const stored = localStorage.getItem("events");
     if (stored) {
