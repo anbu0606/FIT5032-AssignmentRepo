@@ -1,6 +1,5 @@
 <script setup>
 import Form from './components/Form.vue'
-import Data from './components/data.vue'
 
 </script>
 
