@@ -25,6 +25,23 @@
               />
             </div>
           </div>
+
+          <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+              <label for="gender" class="form-label">Gender</label>
+              <select
+                class="form-select"
+                id="gender"
+                v-model="formData.gender"
+                @change="validateGender(true)"
+              >
+                <option value="">-- Select Gender --</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+              <div v-if="errors.gender" class="text-danger">{{ errors.gender }}</div>
+            </div>
+          </div>
             
 
         
@@ -44,10 +61,13 @@
       <h3 class="text-center mb-3">Submitted Users</h3>
       <DataTable :value="submittedCards" tableStyle="min-width: 50rem">
         <Column field="username" header="Username"></Column>
+
         <Column field="password" header="Password"></Column>
+                <Column field="gender" header="Gender"></Column>
+
       </DataTable>
     </div>
-  </div>
+
 </template>
 
 <script setup>
@@ -71,7 +91,22 @@ const errors = ref({
 })
 
 
+const validateGender = (blur) => {
+  if (!formData.value.gender) {
+    if (blur) errors.value.gender = "Please select your gender."
+  } else {
+    errors.value.gender = null
+  }
+}
+const submitForm = () => {
 
+  validateGender(true)
+
+  if (!errors.value.username && !errors.value.password && !errors.value.resident && !errors.value.gender && !errors.value.reason) {
+    submittedCards.value.push({ ...formData.value })
+    clearForm()
+  }
+}
 
 const clearForm = () => {
   formData.value = {
