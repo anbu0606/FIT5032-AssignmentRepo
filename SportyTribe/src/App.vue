@@ -13,7 +13,7 @@ import Data from './components/data.vue'
 
   <main>
     <Form />
-    <Data />
+  
   </main>
 </template>
 

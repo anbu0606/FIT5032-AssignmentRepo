@@ -1,63 +1,107 @@
+<!------------html---->
 <template>
   <div class="container mt-5">
-    <h2>Register for SportyTribe!</h2>
-    <form @submit.prevent="handleSubmit" novalidate>
-      
-      <!-- Name -->
-      <div class="mb-3">
-        <label class="form-label">Full Name</label>
-        <input type="text" v-model="form.name" class="form-control" required />
-        <div v-if="errors.name" class="text-danger">{{ errors.name }}</div>
-      </div>
+    <div class="row">
+      <div class="col-12 col-md-8 offset-md-2">
+        <h1 class="text-center">SportyTribe Login</h1>
+        <form @submit.prevent="submitForm">
+          <div class="row mb-3">
+            <div class="col-12 col-sm-6">
+              <label for="username" class="form-label">Username</label>
+              <input type="text"
+                class="form-control"
+                id="username"
+                required v-model="formData.username"
+              />
+              <div v-if="errors.username" class="text-danger">{{ errors.username }}</div>
+            </div>
+            <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                required minlength="4" maxlength="10" v-model="formData.password"
+              />
+            </div>
+          </div>
+            
 
-      <!-- Email -->
-      <div class="mb-3">
-        <label class="form-label">Email</label>
-        <input type="email" v-model="form.email" class="form-control" required />
-        <div v-if="errors.email" class="text-danger">{{ errors.email }}</div>
+        
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary me-2">Submit</button>
+            <button type="button" class="btn btn-secondary" @click="clearForm">
+              Clear
+            </button>
+          </div>
+        </form>
       </div>
+    </div>
 
-      <!-- Password -->
-      <div class="mb-3">
-        <label class="form-label">Password</label>
-        <input type="password" v-model="form.password" class="form-control" minlength="6" required />
-        <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
-      </div>
 
-      <button class="btn btn-primary">Register</button>
-    </form>
+
+    <div class="row mt-5" v-if="submittedCards.length">
+      <h3 class="text-center mb-3">Submitted Users</h3>
+      <DataTable :value="submittedCards" tableStyle="min-width: 50rem">
+        <Column field="username" header="Username"></Column>
+        <Column field="password" header="Password"></Column>
+      </DataTable>
+    </div>
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      form: { name: '', email: '', password: '' },
-      errors: {}
-    }
-  },
-  methods: {
-    handleSubmit() {
-      this.errors = {};
-      // Name required
-      if (!this.form.name) this.errors.name = "Name is required";
-      // Email format
-      const emailPattern = /^[^@]+@[^@]+\.[^@]+$/;
-      if (!this.form.email) this.errors.email = "Email is required";
-      else if (!emailPattern.test(this.form.email)) this.errors.email = "Invalid email format";
-      // Password min length
-      if (!this.form.password) this.errors.password = "Password is required";
-      else if (this.form.password.length < 6) this.errors.password = "Password must be at least 6 characters";
+<script setup>
+import { ref } from 'vue'
 
-      if (Object.keys(this.errors).length === 0) {
-        alert("Form submitted successfully!");
-      }
-    }
+const formData = ref({
+  username: '',
+  password: '',
+  isAustralian: false,
+  reason: '',
+  gender: ''
+})
+
+const submittedCards = ref([])
+const errors = ref({
+  username: null,
+  password: null,
+  resident: null,
+  gender: null,
+  reason: null,
+})
+
+
+
+// const submitForm = () => {
+//   validateName(true)
+//   validatePassword(true)
+//   validateResident(true)
+//   validateGender(true)
+//   validateReason(true)
+
+//   if (!errors.value.username && !errors.value.password && !errors.value.resident && !errors.value.gender && !errors.value.reason) {
+//     submittedCards.value.push({ ...formData.value })
+//     clearForm()
+//   }
+// }
+
+const clearForm = () => {
+  formData.value = {
+    username: '',
+    password: '',
+    isAustralian: false,
+    reason: '',
+    gender: ''
   }
 }
+
+
 </script>
 
-
-
-
+<style scoped>
+.card {
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+</style>
