@@ -1,10 +1,10 @@
 <template>
-  <div class="container mt-5">
-    <div class="row">
-      <div class="col-12 col-md-8 offset-md-2">
+  <div class="container py-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-md-8 col-lg-6">
         <h1 class="text-center">SportyTribe Login</h1>
 
-        <form @submit.prevent="submitForm">
+        <form @submit.prevent="submitForm" class="p-4 shadow rounded bg-white">
           <!-- Username (HTML validation only) -->
           <div class="row mb-3">
             <div class="col-12 col-sm-6">
@@ -30,12 +30,12 @@
                 v-model="formData.password"
                 
               />
-              <div v-if="errors.password" class="text-danger">{{ errors.password }}</div>
+              <div v-if="errors.password" class="text-danger small mt-1">{{ errors.password }}</div>
             </div>
           </div>
 
           <!-- Gender (Vue validation) -->
-          <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+          <div class="mb-3">
             <label for="gender" class="form-label">Gender</label>
             <select
               class="form-select"
@@ -48,11 +48,11 @@
               <option value="female">Female</option>
               <option value="other">Other</option>
             </select>
-            <div v-if="errors.gender" class="text-danger">{{ errors.gender }}</div>
+            <div v-if="errors.gender" class="text-danger small mt-1">{{ errors.gender }}</div>
           </div>
 
           <!-- Buttons -->
-          <div class="text-center mt-3">
+          <div class="d-flex justify-content-center gap-2">
             <button type="submit" class="btn btn-primary me-2">Submit</button>
             <button type="button" class="btn btn-secondary" @click="clearForm">
               Clear
@@ -63,7 +63,8 @@
     </div>
 
     <!-- Submitted Users Table -->
-    <div class="row mt-5" v-if="submittedCards.length">
+    <div class="row justify-content-center mt-5" v-if="submittedCards.length">
+      <div class="col-12 col-md-10">
       <h3 class="text-center mb-3">Submitted Users</h3>
       <DataTable :value="submittedCards" tableStyle="min-width: 50rem">
         <Column field="username" header="Username"></Column>
@@ -71,6 +72,7 @@
         <Column field="gender" header="Gender"></Column>
       </DataTable>
     </div>
+  </div>
   </div>
 </template>
 

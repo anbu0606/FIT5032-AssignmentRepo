@@ -6,10 +6,10 @@ h1 {
 }
 
  /* Class selectors */
-.form {
+/* .form {
     text-align: center;
     margin-top: 50px;
-}
+} */
 
  /* ID selectors */
  #username:focus,

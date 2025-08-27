@@ -1,47 +1,37 @@
 <script setup>
 import Headernav from './components/headernav.vue';
-
-
 </script>
 
 <template>
       <div class = "main-container">
 
-  <header>
-  <headernav/>
-  </header>
 
-  <main>
-    <router-view></router-view>
+  <headernav/>
+
+  <main class ="pt-4">
+    <router-view/>
   </main>
   </div>
 </template>
 
 <style scoped>
-header {
-  line-height: 1.5;
+.main-container {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
 }
 
-.logo {
-  display: block;
-  margin: 0 auto 2rem;
+nav.navbar {
+  margin: 0;
+  padding: 0;
+  
 }
 
-@media (min-width: 1024px) {
-  header {
-    display: flex;
-    place-items: center;
-    padding-right: calc(var(--section-gap) / 2);
-  }
-
-  .logo {
-    margin: 0 2rem 0 0;
-  }
-
-  header .wrapper {
-    display: flex;
-    place-items: flex-start;
-    flex-wrap: wrap;
-  }
+main {
+  flex: 1;
+  padding-top: 2rem;
 }
+
+
+
 </style>

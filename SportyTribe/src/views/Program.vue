@@ -63,7 +63,7 @@ onMounted(() => {
       { id: 2, name: "Netball Workshop", date: "2025-09-15", location: "Dandenong Stadium" },
       { id: 3, name: "Inclusive Cricket Meetup", date: "2025-09-20", location: "Carlton Oval" },
       { id: 4, name: "Youth Basketball Camp", date: "2025-09-25", location: "Richmond Rec Centre" },
-      { id: 5, name: "Women’s Health Run", date: "2025-09-30", location: "Albert Park Lake" }
+      { id: 5, name: "Women's Health Run", date: "2025-09-30", location: "Albert Park Lake" }
     ]
     localStorage.setItem("sportytribe_events", JSON.stringify(events.value))
   }
@@ -101,7 +101,7 @@ onMounted(() => {
 </template>
 
 <style>
-/* Optional: tweak PrimeVue’s default */
+/* Optional: tweak PrimeVue's default */
 .p-input-icon-left {
   width: 100%;
   max-width: 300px;
