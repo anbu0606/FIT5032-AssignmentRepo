@@ -1,19 +1,20 @@
 <script setup>
-import Form from './components/Form.vue'
+import Headernav from './components/headernav.vue';
+
 
 </script>
 
 <template>
-  <header>
-    <img alt="Vue logo" class="logo" src="./assets/logo.svg" width="125" height="125" />
+      <div class = "main-container">
 
-    
+  <header>
+  <headernav/>
   </header>
 
   <main>
-    <Form />
-  
+    <router-view></router-view>
   </main>
+  </div>
 </template>
 
 <style scoped>
