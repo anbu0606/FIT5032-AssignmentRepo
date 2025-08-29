@@ -1,11 +1,13 @@
 <template>
-  <div class="container py-5">
+  <div class="container-fluid mt-5">
     <div class="row justify-content-center">
-      <div class="col-12 col-md-8 col-lg-6">
+      <div class="col-12 col-lg-10">
         <h1 class="text-center">SportyTribe Login</h1>
 
-        <form @submit.prevent="submitForm" class="p-4 shadow rounded bg-white">
-          <!-- Username (HTML validation only) -->
+        <!-- displaying the form until it is submitted -->
+        <form v-if="!isLoggedIn" @submit.prevent="submitForm" class="p-4 shadow rounded bg-white">
+
+          <!-- HTML validation -->
           <div class="row mb-3">
             <div class="col-12 col-sm-6">
               <label for="username" class="form-label">Username</label>
@@ -18,61 +20,72 @@
               />
             </div>
 
-            <!-- Password (Vue validation) -->
+            <!-- Vue validation -->
             <div class="col-12 col-sm-6 mt-3 mt-sm-0">
               <label for="password" class="form-label">Password</label>
               <input
                 type="password"
                 class="form-control"
                 id="password"
+                required
                 @blur="() => validatePassword(true)"
                 @input="() => validatePassword(false)"
                 v-model="formData.password"
-                
               />
-              <div v-if="errors.password" class="text-danger small mt-1">{{ errors.password }}</div>
+              <div v-if="errors.password" class="text-danger small mt-1">
+                {{ errors.password }}
+              </div>
             </div>
           </div>
 
-          <!-- Gender (Vue validation) -->
-          <div class="mb-3">
-            <label for="gender" class="form-label">Gender</label>
-            <select
-              class="form-select"
-              id="gender"
-              v-model="formData.gender"
-              @change="validateGender(true)"
-            >
-              <option value="">-- Select Gender --</option>
-              <option value="male">Male</option>
-              <option value="female">Female</option>
-              <option value="other">Other</option>
-            </select>
-            <div v-if="errors.gender" class="text-danger small mt-1">{{ errors.gender }}</div>
+          <!-- Vue validation -->
+          <div class="row mb-3">
+            <div class="col-12 col-sm-6">
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="isAustralian"
+                  v-model="formData.isAustralian"
+                  @change="validateResident(true)"
+                />
+                <label class="form-check-label" for="isAustralian">
+                  Australian Resident?
+                </label>
+              </div>
+              <div v-if="errors.resident" class="text-danger">{{ errors.resident }}</div>
+            </div>
+
+            <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+              <label for="gender" class="form-label">Gender</label>
+              <select
+                class="form-select"
+                id="gender"
+                required
+                v-model="formData.gender"
+                @change="validateGender(true)"
+              >
+                <option value="">-- Select Gender --</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+              <div v-if="errors.gender" class="text-danger small mt-1">{{ errors.gender }}</div>
+            </div>
           </div>
 
-          <!-- Buttons -->
           <div class="d-flex justify-content-center gap-2">
             <button type="submit" class="btn btn-primary me-2">Submit</button>
-            <button type="button" class="btn btn-secondary" @click="clearForm">
-              Clear
-            </button>
+            <button type="button" class="btn btn-secondary" @click="clearForm">Clear</button>
           </div>
         </form>
+
+        <!-- Login Message -->
+        <div v-else class="alert alert-success text-center p-4 shadow rounded">
+          Logged in successfully!!!
+        </div>
       </div>
     </div>
-
-    <!-- Submitted Users Table -->
-    <div class="row justify-content-center mt-5" v-if="submittedCards.length">
-      <div class="col-12 col-md-10">
-      <h3 class="text-center mb-3">Submitted Users</h3>
-      <DataTable :value="submittedCards" tableStyle="min-width: 50rem">
-        <Column field="username" header="Username"></Column>
-        <Column field="password" header="Password"></Column>
-        <Column field="gender" header="Gender"></Column>
-      </DataTable>
-    </div>
-  </div>
   </div>
 </template>
 
@@ -82,16 +95,18 @@ import { ref } from "vue"
 const formData = ref({
   username: "",
   password: "",
-  gender: ""
+  gender: "",
+  isAustralian: false
 })
 
-const submittedCards = ref([])
 const errors = ref({
   password: null,
-  gender: null
+  gender: null,
+  resident: null
 })
 
-//  Password validation using vue 
+const isLoggedIn = ref(false)
+
 const validatePassword = (blur) => {
   const password = formData.value.password
   const minLength = 8
@@ -115,8 +130,6 @@ const validatePassword = (blur) => {
   }
 }
 
-
-//  Gender validation using vue
 const validateGender = (blur) => {
   if (!formData.value.gender) {
     if (blur) errors.value.gender = "Please select your gender."
@@ -125,12 +138,21 @@ const validateGender = (blur) => {
   }
 }
 
-const submitForm = () => {
-  validatePassword()
-  validateGender(true)
+const validateResident = (blur) => {
+  if (!formData.value.isAustralian) {
+    if (blur) errors.value.resident = "You must be an Australian resident."
+  } else {
+    errors.value.resident = null
+  }
+}
 
-  if (!errors.value.password && !errors.value.gender) {
-    submittedCards.value.push({ ...formData.value })
+const submitForm = () => {
+  validatePassword(true)
+  validateGender(true)
+  validateResident(true)
+
+  if (!errors.value.password && !errors.value.gender && !errors.value.resident) {
+    isLoggedIn.value = true // Dispalying the success message
     clearForm()
   }
 }
@@ -139,9 +161,9 @@ const clearForm = () => {
   formData.value = {
     username: "",
     password: "",
-    gender: ""
+    gender: "",
+    isAustralian: false
   }
-  errors.value.password = null
-  errors.value.gender = null
+  errors.value = { password: null, gender: null, resident: null }
 }
 </script>

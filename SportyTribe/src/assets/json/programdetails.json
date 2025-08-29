@@ -1,0 +1,7 @@
+[
+  { "id": 1, "name": "Junior Football Match", "date": "2025-09-10", "location": "Melbourne Park" },
+  { "id": 2, "name": "Football Workshop", "date": "2025-09-15", "location": "Dandenong Stadium" },
+  { "id": 3, "name": "Inclusive Cricket Match", "date": "2025-09-20", "location": "Carlton Oval" },
+  { "id": 4, "name": "Youth Volleyball meetup", "date": "2025-09-25", "location": "Richmond Rec Centre" },
+  { "id": 5, "name": "Women's Health Run", "date": "2025-09-30", "location": "Albert Park Lake" }
+]
