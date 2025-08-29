@@ -13,8 +13,7 @@ const filters = ref({ global: { value: null } })
     <p class="text-muted">Browse upcoming sporting community activities!</p>
 
     <div class="mb-3">
-      <span class="p-input-icon-left">
-        <i class="pi pi-search" />
+      <span class="p-input">
         <InputText v-model="filters.global.value" placeholder="Search events..." />
       </span>
     </div>
@@ -28,7 +27,8 @@ const filters = ref({ global: { value: null } })
 </template>
 
 <style>
-.p-input-icon-left {
+.p-input {
+
   width: 100%;
   max-width: 300px;
   display: inline-block;

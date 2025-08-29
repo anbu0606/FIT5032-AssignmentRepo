@@ -6,11 +6,14 @@ import App from './App.vue'
 import 'bootstrap/dist/css/bootstrap.min.css'
 
 import PrimeVue from 'primevue/config'
+import InputText from 'primevue/inputtext'
+
 import Aura from '@primeuix/themes/aura'
 
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import router from './router'
+
 
 const app = createApp(App)
 
@@ -25,7 +28,8 @@ app.use(PrimeVue, {
   }
 })
 app.use(router)
-
+app.use(PrimeVue)
+app.component('InputText', InputText)
 app.component('DataTable', DataTable)
 app.component('Column', Column)
 
