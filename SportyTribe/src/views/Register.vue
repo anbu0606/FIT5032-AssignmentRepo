@@ -1,0 +1,176 @@
+<template>
+  <div class="container-fluid mt-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-10">
+        <h1 class="text-center">Register for SportyTribe</h1>
+
+        <form @submit.prevent="registerUser" class="p-4 shadow rounded bg-white">
+          <div class="row mb-3">
+            <div class="col-12 col-sm-6">
+              <label for="username" class="form-label">Username</label>
+              <input
+                type="text"
+                class="form-control"
+                id="username"
+                required
+                v-model="formData.username"
+              />
+            </div>
+
+            <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+              <label for="password" class="form-label">Password</label>
+              <input
+                type="password"
+                class="form-control"
+                id="password"
+                required
+                @blur="() => validatePassword(true)"
+                @input="() => validatePassword(false)"
+                v-model="formData.password"
+              />
+              <div v-if="errors.password" class="text-danger small mt-1">
+                {{ errors.password }}
+              </div>
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-12 col-sm-6">
+              <div class="form-check">
+                <input
+                  type="checkbox"
+                  class="form-check-input"
+                  id="isAustralian"
+                  v-model="formData.isAustralian"
+                  @change="validateResident(true)"
+                />
+                <label class="form-check-label" for="isAustralian">
+                  Australian Resident?
+                </label>
+              </div>
+              <div v-if="errors.resident" class="text-danger">{{ errors.resident }}</div>
+            </div>
+
+            <div class="col-12 col-sm-6 mt-3 mt-sm-0">
+              <label for="gender" class="form-label">Gender</label>
+              <select
+                class="form-select"
+                id="gender"
+                required
+                v-model="formData.gender"
+                @change="validateGender(true)"
+              >
+                <option value="">-- Select Gender --</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+                <option value="other">Other</option>
+              </select>
+              <div v-if="errors.gender" class="text-danger small mt-1">{{ errors.gender }}</div>
+            </div>
+          </div>
+
+          <div class="d-flex justify-content-center gap-2">
+            <button type="submit" class="btn btn-success">Register</button>
+            <button type="button" class="btn btn-secondary" @click="clearForm">Clear</button>
+          </div>
+        </form>
+
+        <div v-if="isRegistered" class="alert alert-success text-center p-4 shadow rounded mt-3">
+          Registration successful! Please <router-link to="/login">Login</router-link>.
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script setup>
+import { ref } from "vue"
+import { useRouter } from "vue-router"
+
+const router = useRouter()
+
+const formData = ref({
+  username: "",
+  password: "",
+  gender: "",
+  isAustralian: false
+})
+
+const errors = ref({
+  password: null,
+  gender: null,
+  resident: null
+})
+
+const isRegistered = ref(false)
+
+const validatePassword = (blur) => {
+  const password = formData.value.password
+  const minLength = 8
+  const hasUppercase = /[A-Z]/.test(password)
+  const hasLowercase = /[a-z]/.test(password)
+  const hasNumber = /\d/.test(password)
+  const hasSpecialChar = /[!@#$%^&*(),.?":{}|<>]/.test(password)
+
+  if (password.length < minLength) {
+    if (blur) errors.value.password = `Password must be at least ${minLength} characters long.`
+  } else if (!hasUppercase) {
+    if (blur) errors.value.password = "Password must contain at least one uppercase letter."
+  } else if (!hasLowercase) {
+    if (blur) errors.value.password = "Password must contain at least one lowercase letter."
+  } else if (!hasNumber) {
+    if (blur) errors.value.password = "Password must contain at least one number."
+  } else if (!hasSpecialChar) {
+    if (blur) errors.value.password = "Password must contain at least one special character."
+  } else {
+    errors.value.password = null
+  }
+}
+
+const validateGender = (blur) => {
+  if (!formData.value.gender) {
+    if (blur) errors.value.gender = "Please select your gender."
+  } else {
+    errors.value.gender = null
+  }
+}
+
+const validateResident = (blur) => {
+  if (!formData.value.isAustralian) {
+    if (blur) errors.value.resident = "You must be an Australian resident."
+  } else {
+    errors.value.resident = null
+  }
+}
+
+const registerUser = () => {
+  validatePassword(true)
+  validateGender(true)
+  validateResident(true)
+
+  if (!errors.value.password && !errors.value.gender && !errors.value.resident) {
+    let users = JSON.parse(localStorage.getItem("users")) || []
+
+    if (users.some((u) => u.username === formData.value.username)) {
+      errors.value.username = "Username already exists!"
+      return
+    }
+
+    users.push({ ...formData.value })
+    localStorage.setItem("users", JSON.stringify(users))
+
+    isRegistered.value = true
+    clearForm()
+    // router.push("/login") // auto-redirect after register
+  }
+}
+
+const clearForm = () => {
+  formData.value = {
+    username: "",
+    password: "",
+    gender: "",
+    isAustralian: false
+  }
+  errors.value = { password: null, gender: null, resident: null }
+}
+</script>
