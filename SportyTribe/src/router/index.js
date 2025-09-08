@@ -3,6 +3,8 @@ import Form from '../views/Form.vue'
 import Program from '../views/Program.vue'
 import Home from '@/views/Home.vue'
 import Register from '@/views/Register.vue'
+import FireLogin from '@/views/FirebaseSigninView.vue'
+import FireRegister from '@/views/FirebaseRegisterView.vue'
 
 const routes = [
    {
@@ -28,6 +30,16 @@ const routes = [
     path: '/program',   
     name: 'Program',
     component: Program
+  },
+   {
+    path: '/fireLogin',
+    name: 'FireLogin',
+    component: FirebaseSigninView  
+  },
+  {
+    path: '/fireRegister',
+    name: 'FireRegister',
+    component: FirebaseRegisterView  
   }
 ]
 
