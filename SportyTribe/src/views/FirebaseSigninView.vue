@@ -1,35 +1,93 @@
 <template>
-  <h1>Sign in</h1>
-  <p>
-    <input type="text" placeholder="Email" v-model="email" />
-  </p>
-  <p>
-    <input type="password" placeholder="Password" v-model="password" />
-  </p>
-  <p>
-    <button @click="signin">Sign in via Firebase</button>
-  </p>
+  <div class="container-fluid mt-5">
+    <div class="row justify-content-center">
+      <div class="col-12 col-lg-6">
+        <h1 class="text-center">SportyTribe Login</h1>
+        <form @submit.prevent="signin" class="p-4 shadow rounded bg-white">
+
+          <div class="mb-3">
+            <label for="email" class="form-label">Email</label>
+            <input
+              type="email"
+              class="form-control"
+              id="email"
+              required
+              v-model="email"
+            />
+          </div>
+
+          <div class="mb-3">
+            <label for="password" class="form-label">Password</label>
+            <input
+              type="password"
+              class="form-control"
+              id="password"
+              required
+              v-model="password"
+            />
+          </div>
+
+          <div v-if="error" class="text-danger small mb-2">
+            {{ error }}
+          </div>
+
+          <div class="d-flex justify-content-between">
+            <button type="submit" class="btn btn-primary">Login</button>
+            <router-link to="/fireregister" class="btn btn-secondary">Register</router-link>
+          </div>
+        </form>
+
+        <div v-if="isLoggedIn" class="alert alert-success text-center p-4 shadow rounded mt-3">
+          Welcome back, {{ loggedInUser?.username }} <br />
+          <small>Email: {{ loggedInUser?.email }}</small><br />
+          <small>Gender: {{ loggedInUser?.gender }}</small><br />
+          <small>Resident: {{ loggedInUser?.isAustralian ? "Yes" : "No" }}</small><br />
+          <router-link to="/home" class="btn btn-success mt-3">Go to Home</router-link>
+        </div>
+      </div>
+    </div>
+  </div>
 </template>
 
 <script setup>
 import { ref } from "vue"
-import { getAuth, signInWithEmailAndPassword } from "firebase/auth"
 import { useRouter } from "vue-router"
+import { auth } from "@/firebase/init"
+import { signInWithEmailAndPassword } from "firebase/auth"
+import { getFirestore, doc, getDoc } from "firebase/firestore"
+
+const router = useRouter()
+const db = getFirestore()
 
 const email = ref("")
 const password = ref("")
-const router = useRouter()
-const auth = getAuth()
 
-const signin = () => {
-  signInWithEmailAndPassword(auth, email.value, password.value)
-    .then((data) => {
-      console.log("Firebase Sign-in Successful!", data)
-      console.log("Current User:", auth.currentUser) // To check signed-in user
-      router.push("/") // Redirect to homepage after login
-    })
-    .catch((error) => {
-      console.log("Error:", error.code, error.message)
-    })
+const error = ref(null)
+const isLoggedIn = ref(false)
+const loggedInUser = ref(null)
+
+const signin = async () => {
+  try {
+    const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
+    const user = userCredential.user
+
+    const docRef = doc(db, "users", user.uid)
+    const docSnap = await getDoc(docRef)
+
+    if (docSnap.exists()) {
+      loggedInUser.value = docSnap.data()
+      isLoggedIn.value = true
+      error.value = null
+
+  
+      console.log("User profile:", loggedInUser.value)
+    } else {
+      error.value = "User profile not found in database."
+    }
+  } catch (err) {
+    error.value = "Invalid email or password."
+    isLoggedIn.value = false
+    console.error("Login error:", err.code, err.message)
+  }
 }
 </script>

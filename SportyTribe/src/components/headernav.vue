@@ -38,6 +38,9 @@
           <li class="nav-item">
           <router-link class="btn btn-primary ms-2" to="/Firelogin" active-class="active">Firebase Login</router-link>
           </li>
+          <li class="nav-item">
+          <router-link class="btn btn-primary ms-2" to="/FireRegister" active-class="active">Firebase Register</router-link>
+          </li>
       </ul>
         </div>
       </nav>

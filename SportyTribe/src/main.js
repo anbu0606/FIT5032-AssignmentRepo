@@ -36,21 +36,3 @@ app.component('Column', Column)
 app.mount('#app')
 
 
-
-// Import the functions you need from the SDKs you need
-import { initializeApp } from "firebase/app";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
-
-// Your web app's Firebase configuration
-const firebaseConfig = {
-  apiKey: "AIzaSyDuzc75tks7BQ2nDp2JfBmjEYF9yVDuC2k",
-  authDomain: "sportytribe-45a76.firebaseapp.com",
-  projectId: "sportytribe-45a76",
-  storageBucket: "sportytribe-45a76.firebasestorage.app",
-  messagingSenderId: "143596988256",
-  appId: "1:143596988256:web:51f007929fd67ac51b2005"
-};
-
-// Initialize Firebase
-initializeApp(firebaseConfig);
