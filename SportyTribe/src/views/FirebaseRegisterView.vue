@@ -11,6 +11,7 @@
               <input type="email" class="form-control" id="email"
                 required
                 v-model="formData.email"
+                pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$"
               />
             </div>
 
@@ -67,7 +68,7 @@
         </form>
 
         <div v-if="isRegistered" class="alert alert-success text-center p-4 shadow rounded mt-3">
-          Registration successful! Please <router-link to="/firelogin">Login</router-link>.
+          Registration successful! Please Login! <router-link to="/firelogin">Login</router-link>.
         </div>
       </div>
     </div>
@@ -158,7 +159,8 @@ const registerUser = async () => {
       await setDoc(doc(db, "users", user.uid), {
         email: formData.value.email,
         gender: formData.value.gender,
-        isAustralian: formData.value.isAustralian
+        isAustralian: formData.value.isAustralian,
+        role: "user"
       })
 
       isRegistered.value = true

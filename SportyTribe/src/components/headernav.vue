@@ -14,16 +14,16 @@
           <li class="nav-item">
           <router-link to="/home" class="nav-link px-3" active-class="active">Home</router-link>
         </li>
-        <li class="nav-item">        
+        <li v-if="userRole === 'user'" class="nav-item">        
           <router-link to="/program" class="nav-link px-3" active-class="active">Program</router-link>
         </li>
-        <li class="nav-item"> 
+        <li v-if="userRole === 'user'" class="nav-item"> 
           <router-link to="/resources" class="nav-link px-3" active-class="active">Resources</router-link>
         </li>
-        <li class="nav-item">    
+        <li v-if="userRole === 'user'" class="nav-item">    
           <router-link to="/calendar" class="nav-link px-3" active-class="active">Calendar</router-link>
         </li>
-        <li class="nav-item">   
+        <li v-if="userRole === 'user'" class="nav-item">   
           <router-link to="/nearbyevents" class="nav-link px-3" active-class="active">Nearby Events</router-link>
         </li>
         <li class="nav-item">
@@ -32,15 +32,25 @@
         <li class="nav-item">
           <router-link to="/contactus" class="nav-link px-3" active-class="active">Contact Us</router-link>
         </li>
-        <li class="nav-item">
-          <router-link class="btn btn-primary ms-2" to="/form" active-class="active">Login</router-link>
-          </li>
           <li class="nav-item">
-          <router-link class="btn btn-primary ms-2" to="/Firelogin" active-class="active">Firebase Login</router-link>
+          <router-link class="btn btn-primary ms-2" to="/Firelogin" active-class="active">Login</router-link>
           </li>
-          <li class="nav-item">
-          <router-link class="btn btn-primary ms-2" to="/FireRegister" active-class="active">Firebase Register</router-link>
-          </li>
+
+
+
+           <li v-if="userRole === 'user'" class="nav-item">
+          <router-link to="/contactus" class="nav-link px-3" active-class="active">Contact Us</router-link>
+        </li>
+
+
+
+        <li v-if="userRole === 'admin'" class="nav-item">
+              <router-link to="/admin-dashboard" class="nav-link px-3 text-warning fw-bold">Admin Dashboard</router-link>
+            </li>
+
+            <li v-if="userRole === 'admin'" class="nav-item">
+              <router-link to="/admin-dashboard" class="nav-link px-3 text-warning fw-bold">Admin Profile</router-link>
+            </li>
       </ul>
         </div>
       </nav>
@@ -48,6 +58,29 @@
   </header>
 </template>
 <script setup>
+import { ref, onMounted } from "vue"
+import { auth, db } from "@/firebase/init"
+import { doc, getDoc } from "firebase/firestore"
+
+const isLoggedIn = ref(false)
+const userRole = ref(null)
+
+
+onMounted(() => {
+  auth.onAuthStateChanged(async (user) => {
+    if (user) {
+      isLoggedIn.value = true
+      const docRef = doc(db, "users", user.uid)
+      const docSnap = await getDoc(docRef)
+      if (docSnap.exists()) {
+        userRole.value = docSnap.data().role
+      }
+    } else {
+      isLoggedIn.value = false
+      userRole.value = null
+    }
+  })
+})
 </script>
 <style scoped>
 

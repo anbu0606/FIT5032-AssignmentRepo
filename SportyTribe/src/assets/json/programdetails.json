@@ -1,7 +1,42 @@
 [
-  { "id": 1, "name": "Junior Football Match", "date": "2025-09-10", "location": "Melbourne Park" },
-  { "id": 2, "name": "Football Workshop", "date": "2025-09-15", "location": "Dandenong Stadium" },
-  { "id": 3, "name": "Inclusive Cricket Match", "date": "2025-09-20", "location": "Carlton Oval" },
-  { "id": 4, "name": "Youth Volleyball meetup", "date": "2025-09-25", "location": "Richmond Rec Centre" },
-  { "id": 5, "name": "Women's Health Run", "date": "2025-09-30", "location": "Albert Park Lake" }
+  { 
+    "id": 1, 
+    "name": "Junior Football Match", 
+    "date": "2025-09-10", 
+    "location": "Melbourne Park",
+    "ratings": [4, 5, 3, 4],
+    "reviews": ["Great Experience!", "Loved It!."]
+  },
+  { 
+    "id": 2, 
+    "name": "Football Workshop", 
+    "date": "2025-09-15", 
+    "location": "Dandenong Stadium",
+    "ratings": [5, 5, 4],
+    "reviews": ["It was fun!"]
+  },
+  { 
+    "id": 3, 
+    "name": "Inclusive Cricket Match", 
+    "date": "2025-09-20", 
+    "location": "Carlton Oval",
+    "ratings": [3, 4],
+     "reviews": ["Very helpful!"]
+  },
+  { 
+    "id": 4, 
+    "name": "Youth Volleyball meetup", 
+    "date": "2025-09-25", 
+    "location": "Richmond Rec Centre",
+    "ratings": [],
+     "reviews": []
+  },
+  { 
+    "id": 5, 
+    "name": "Women's Health Run", 
+    "date": "2025-09-30", 
+    "location": "Albert Park Lake",
+    "ratings": [5],
+     "reviews": [] 
+  }
 ]

@@ -34,15 +34,13 @@
           <div class="d-flex justify-content-between">
             <button type="submit" class="btn btn-primary">Login</button>
             <router-link to="/fireregister" class="btn btn-secondary">Register</router-link>
+            <router-link to="/adminlogin" class="btn btn-secondary">Admin Login</router-link>
           </div>
         </form>
 
         <div v-if="isLoggedIn" class="alert alert-success text-center p-4 shadow rounded mt-3">
-          Welcome back, {{ loggedInUser?.username }} <br />
-          <small>Email: {{ loggedInUser?.email }}</small><br />
-          <small>Gender: {{ loggedInUser?.gender }}</small><br />
-          <small>Resident: {{ loggedInUser?.isAustralian ? "Yes" : "No" }}</small><br />
-          <router-link to="/home" class="btn btn-success mt-3">Go to Home</router-link>
+          Welcome back, {{ loggedInUser?.email }} <br />
+          <router-link to="/home" class="btn btn-success mt-3">Continue!</router-link>
         </div>
       </div>
     </div>

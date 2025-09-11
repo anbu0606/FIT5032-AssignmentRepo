@@ -9,6 +9,7 @@ import PrimeVue from 'primevue/config'
 import InputText from 'primevue/inputtext'
 
 import Aura from '@primeuix/themes/aura'
+import Rating from 'primevue/rating'
 
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -32,6 +33,7 @@ app.use(PrimeVue)
 app.component('InputText', InputText)
 app.component('DataTable', DataTable)
 app.component('Column', Column)
+app.component('Rating', Rating)
 
 app.mount('#app')
 

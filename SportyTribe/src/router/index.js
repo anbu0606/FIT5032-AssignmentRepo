@@ -1,10 +1,10 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import Form from '../views/Form.vue'
 import Program from '../views/Program.vue'
 import Home from '@/views/Home.vue'
-import Register from '@/views/Register.vue'
 import FirebaseSigninView from "@/views/FirebaseSigninView.vue"
 import FirebaseRegisterView from "@/views/FirebaseRegisterView.vue"
+import AdminLogin from '@/views/AdminLogin.vue'
+import AdminReg from '@/views/AdminReg.vue'
 
 
 const routes = [
@@ -16,16 +16,6 @@ const routes = [
    {
     path: '/home',
     redirect: '/'  
-  },
-  {
-    path: '/form',   
-    name: 'Form',
-    component: Form
-  },
-  {
-    path: '/register',   
-    name: 'Register',
-    component: Register
   },
   {
     path: '/program',   
@@ -41,6 +31,16 @@ const routes = [
     path: '/fireregister',
     name: 'FireRegister',
     component: FirebaseRegisterView  
+  },
+  {
+    path: '/adminlogin',
+    name: 'AdminLogin',
+    component: AdminLogin  
+  },
+  {
+    path: '/adminreg',
+    name: 'AdminReg',
+    component: AdminReg  
   }
 ]
 
