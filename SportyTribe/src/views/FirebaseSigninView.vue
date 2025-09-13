@@ -4,6 +4,8 @@
       <div class="col-12 col-lg-6">
         <h1 class="text-center">SportyTribe Login</h1>
         <form @submit.prevent="signin" class="p-4 shadow rounded bg-white">
+          <p class="text-muted small">Fields marked with <span class="required">*</span> are mandatory.</p>
+
 
           <div class="mb-3">
             <label for="email" class="form-label">Email</label>
@@ -17,7 +19,7 @@
           </div>
 
           <div class="mb-3">
-            <label for="password" class="form-label">Password</label>
+            <label for="password" class="form-label">Password <span class="required">*</span></label>
             <input
               type="password"
               class="form-control"
@@ -89,3 +91,17 @@ const signin = async () => {
   }
 }
 </script>
+
+
+<style>
+.form-control + .text-danger {
+  min-height: 20px;
+  display: block;
+}
+
+
+.required {
+  color: red;
+  margin-left: 2px;
+}
+</style>

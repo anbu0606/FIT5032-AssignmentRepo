@@ -5,6 +5,8 @@
         <h1 class="text-center"> Admin Registration</h1>
 
         <form @submit.prevent="registerUser" class="p-4 shadow rounded bg-white">
+          <p class="text-muted small">Fields marked with <span class="required">*</span> are mandatory.</p>
+
           <div class="row mb-3">
             <div class="col-12 col-sm-6">
               <label for="email" class="form-label">Email</label>
@@ -16,7 +18,7 @@
             </div>
 
             <div class="col-12 col-sm-6 mt-3 mt-sm-0">
-              <label for="password" class="form-label">Password</label>
+              <label for="password" class="form-label">Password <span class="required">*</span></label>
               <input type="password"  class="form-control" id="password"
                 required
                 @blur="() => validatePassword(true)"
@@ -157,3 +159,18 @@ const clearForm = () => {
 }
 
 </script>
+
+<style>
+.form-control + .text-danger {
+  min-height: 20px;
+  display: block;
+}
+
+
+.required {
+  color: red;
+  margin-left: 2px;
+}
+</style>
+
+

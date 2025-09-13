@@ -85,7 +85,7 @@ onMounted(() => {
 <style scoped>
 
 .sporty-navbar {
-  background: linear-gradient(90deg, #0acae3, #00c896);
+  background: linear-gradient(90deg, #004d40, #00c896);
 }
 .brand-icon {
   width: 40px;
@@ -110,7 +110,7 @@ onMounted(() => {
 
 .btn-accent,
 .btn-primary{
-  background: #ff6b6b;
+  background: #ff5722;
   color: white;
   border: none;
   transition: 0.3s;
