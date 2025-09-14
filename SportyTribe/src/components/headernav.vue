@@ -29,11 +29,13 @@
         <li class="nav-item">
           <router-link to="/aboutus" class="nav-link px-3" active-class="active">About Us</router-link>
         </li>
-        <li class="nav-item">
-          <router-link to="/contactus" class="nav-link px-3" active-class="active">Contact Us</router-link>
-        </li>
-          <li class="nav-item">
+        
+          <li v-if="!isLoggedIn" class="nav-item">
           <router-link class="btn btn-primary ms-2" to="/Firelogin" active-class="active">Login</router-link>
+          </li>
+
+          <li v-else class="nav-item">
+            <button class="btn btn-danger ms-2" @click="logout">Logout</button>
           </li>
 
 
@@ -61,11 +63,14 @@
 import { ref, onMounted } from "vue"
 import { auth, db } from "@/firebase/init"
 import { doc, getDoc } from "firebase/firestore"
+import { signOut } from "firebase/auth"
+import { useRouter } from "vue-router"
 
 const isLoggedIn = ref(false)
 const userRole = ref(null)
+const router = useRouter()
 
-
+// Login state
 onMounted(() => {
   auth.onAuthStateChanged(async (user) => {
     if (user) {
@@ -81,6 +86,19 @@ onMounted(() => {
     }
   })
 })
+
+
+// Logout function
+const logout = async () => {
+  try {
+    await signOut(auth)
+    isLoggedIn.value = false
+    userRole.value = null
+    router.push("/Firelogin") 
+  } catch (error) {
+    console.error("Logout failed:", error)
+  }
+}
 </script>
 <style scoped>
 

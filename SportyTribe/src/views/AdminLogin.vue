@@ -2,7 +2,7 @@
   <div class="container-fluid mt-5">
     <div class="row justify-content-center">
       <div class="col-12 col-lg-6">
-        <h1 class="text-center"> dmin Login</h1>
+        <h1 class="text-center"> Admin Login</h1>
         <form @submit.prevent="signin" class="p-4 shadow rounded bg-white">
           <p class="text-muted small">Fields marked with <span class="required">*</span> are mandatory.</p>
 

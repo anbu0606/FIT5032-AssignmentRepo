@@ -19,7 +19,7 @@
     "id": 3, 
     "name": "Inclusive Cricket Match", 
     "date": "2025-09-20", 
-    "location": "Carlton Oval",
+    "location": "Carlton Oval Stadium",
     "ratings": [3, 4],
      "reviews": ["Very helpful!"]
   },
@@ -27,7 +27,7 @@
     "id": 4, 
     "name": "Youth Volleyball meetup", 
     "date": "2025-09-25", 
-    "location": "Richmond Rec Centre",
+    "location": "Richmond Multi Centre Stadium",
     "ratings": [],
      "reviews": []
   },

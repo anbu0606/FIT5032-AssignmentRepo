@@ -8,7 +8,7 @@ const pastReviews1 = ref("")
 const filters = ref({ global: { value: null } })
 
 const formatDate = (dateString) => {
-  return format(new Date(dateString), "dd/MM/yyyy") // Australia format
+  return format(new Date(dateString), "dd/MM/yyyy") // Australian date format
 }
 const ratingUpdation = (event, addRating) => {
    if (!event.ratings) event.ratings = []
@@ -51,8 +51,7 @@ const customerReview = (event) => {
     <DataTable :value="events" :filters="filters" paginator :rows="3" :rowsPerPageOptions="[3,5, 10, 20, 50]" tableStyle="min-width: 50rem" sortMode="multiple" filterDisplay="menu" responsiveLayout="scroll" >
       <Column field="name" header="Event" sortable filter filterPlaceholder="Search by name" style="width: 25%"></Column>
       <Column field="date" header="Date" sortable style="width: 25%">
-      <template #body="{ data }">
-        {{ formatDate(data.date) }}
+      <template #body="{ data }"> {{ formatDate(data.date) }}
       </template>
       </Column>
       <Column field="location" header="Location" sortable filter filterPlaceholder="Search by location" style="width: 25%"></Column>
