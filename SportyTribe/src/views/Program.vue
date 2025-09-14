@@ -23,14 +23,16 @@ const getAverage = (event) => {
 
 const customerReview = (event) => {
   if (!event.reviews) event.reviews = []
-  const pastReviews = pastReviews1.value.trim()
+  const newReviews = pastReviews1.value.trim()
 
-   if (pastReviews.length < 3) {
-    alert("Review must be at least 3 characters.")
+   if (newReviews.length < 3) {
+    alert("Review mucharacters.")
     return
   }
 
-  event.pastReviews.push(pastReviews)
+
+
+  event.reviews.push(newReviews)
   pastReviews1.value = ""
 
 }
@@ -70,7 +72,7 @@ const customerReview = (event) => {
               <li v-for="(review, i) in data.reviews" :key="i"> {{ review }}</li>
             </ul>
             <div class="d-flex mt-2">
-              <InputText v-model="pastReviews" placeholder="Add a review" class="me-2" />
+              <InputText v-model="pastReviews1" placeholder="Add a review" class="me-2" />
               <Button label="Post" size="small" @click="customerReview(data)" />
             </div>
           </div>

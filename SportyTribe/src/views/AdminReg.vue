@@ -27,6 +27,8 @@
               />
               <div v-if="errors.password" class="text-danger small mt-1">
                 {{ errors.password }}
+
+                
               </div>
             </div>
 

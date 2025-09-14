@@ -71,11 +71,11 @@ const signin = async () => {
     const userCredential = await signInWithEmailAndPassword(auth, email.value, password.value)
     const user = userCredential.user
 
-    const docRef = doc(db, "users", user.uid)
-    const docSnap = await getDoc(docRef)
+    const docrerference = doc(db, "users", user.uid)
+    const documentSnap = await getDoc(docrerference)
 
-    if (docSnap.exists()) {
-      loggedInUser.value = docSnap.data()
+    if (documentSnap.exists()) {
+      loggedInUser.value = documentSnap.data()
       isLoggedIn.value = true
       error.value = null
 
