@@ -38,8 +38,10 @@ const email = ref("")
 const subject = ref("")
 const message = ref("")
 const file = ref(null)
-
-// ✅ your deployed Cloud Run URL (from deploy log)
+const loading = ref(false)
+const statusMessage = ref("")
+const statusClass = ref("")
+//  your deployed Cloud Run URL (from deploy log)
 const functionURL = "https://sendemail-c5melirmcq-uc.a.run.app"
 
 const onFileChange = (e) => {
@@ -48,6 +50,8 @@ const onFileChange = (e) => {
 }
 
 const sendEmail = async () => {
+  loading.value = true
+  statusMessage.value = ""
   try {
     let attachmentData = null
 
@@ -62,9 +66,7 @@ const sendEmail = async () => {
 
     const res = await fetch(functionURL, {
       method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
+      headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
         to: email.value,
         subject: subject.value,
@@ -75,15 +77,21 @@ const sendEmail = async () => {
 
     const data = await res.json()
     if (res.ok) {
-      alert("✅ " + data.message)
+      statusMessage.value = " " + data.message
+      statusClass.value = "text-success"
     } else {
-      alert("❌ Failed: " + data.message)
+      statusMessage.value = " Failed: " + data.message
+      statusClass.value = "text-danger"
     }
   } catch (err) {
     console.error("Email send failed:", err)
-    alert("Failed to send email.")
+    statusMessage.value = " Error sending email."
+    statusClass.value = "text-danger"
+  } finally {
+    loading.value = false
   }
 }
+
 
 const toBase64 = (file) =>
   new Promise((resolve, reject) => {
