@@ -41,7 +41,7 @@
 
 
            <li v-if="userRole === 'user'" class="nav-item">
-          <router-link to="/contactus" class="nav-link px-3" active-class="active">Contact Us</router-link>
+          <router-link to="/contact" class="nav-link px-3" active-class="active">Contact Us</router-link>
         </li>
 
 

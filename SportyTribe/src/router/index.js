@@ -5,6 +5,7 @@ import FirebaseSigninView from "@/views/FirebaseSigninView.vue"
 import FirebaseRegisterView from "@/views/FirebaseRegisterView.vue"
 import AdminLogin from '@/views/AdminLogin.vue'
 import AdminReg from '@/views/AdminReg.vue'
+import Contact from '@/views/Contact.vue'
 
 
 const routes = [
@@ -41,6 +42,11 @@ const routes = [
     path: '/adminreg',
     name: 'AdminReg',
     component: AdminReg  
+  },
+  {
+    path: '/contact',
+    name: 'Contact',
+    component: Contact  
   }
 ]
 
