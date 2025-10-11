@@ -6,6 +6,7 @@ import FirebaseRegisterView from "@/views/FirebaseRegisterView.vue"
 import AdminLogin from '@/views/AdminLogin.vue'
 import AdminReg from '@/views/AdminReg.vue'
 import Contact from '@/views/Contact.vue'
+import AdminUserEventsList from '@/views/AdminUserEventsList.vue'
 
 
 const routes = [
@@ -22,6 +23,11 @@ const routes = [
     path: '/program',   
     name: 'Program',
     component: Program
+  },
+  {
+    path: '/adminusereventslist',   
+    name: 'AdminUserEventsList',
+    component: AdminUserEventsList
   },
    {
     path: '/firelogin',
