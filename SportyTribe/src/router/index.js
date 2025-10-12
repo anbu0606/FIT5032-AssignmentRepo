@@ -7,6 +7,8 @@ import AdminLogin from '@/views/AdminLogin.vue'
 import AdminReg from '@/views/AdminReg.vue'
 import Contact from '@/views/Contact.vue'
 import AdminUserEventsList from '@/views/AdminUserEventsList.vue'
+import NearbyEvents from '@/views/NearbyEvents.vue'
+
 
 
 const routes = [
@@ -23,6 +25,11 @@ const routes = [
     path: '/program',   
     name: 'Program',
     component: Program
+  },
+   {
+    path: '/nearbyevents',   
+    name: 'NearbyEvents',
+    component: NearbyEvents
   },
   {
     path: '/adminusereventslist',   

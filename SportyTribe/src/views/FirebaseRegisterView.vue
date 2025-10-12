@@ -1,48 +1,57 @@
 <template>
-  <div class="container-fluid mt-5">
+  <main class="container-fluid mt-5" role="main">
     <div class="row justify-content-center">
       <div class="col-12 col-lg-10">
-        <h1 class="text-center">Register for SportyTribe</h1>
+        <h1 class="text-center" id="registerTitle">Register for SportyTribe</h1>
 
-        <form @submit.prevent="registerUser" class="p-4 shadow rounded bg-white">
+        <form @submit.prevent="registerUser" class="p-4 shadow rounded bg-white" aria-labelledby="registerTitle">
           <p class="text-muted small">Fields marked with <span class="required">*</span> are mandatory.</p>
 
           <div class="row mb-3">
             <div class="col-12 col-sm-6">
-              <label for="email" class="form-label">Email</label>
+              <label for="email" class="form-label">Email <span class="required">*</span></label>
               <input type="email" class="form-control" id="email"
                 required
+                aria-required="true"
                 v-model="formData.email"
                 pattern="[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-z]{2,}$"
+                aria-describedby="emailHelp"
               />
+              <small id="emailHelp" class="form-text text-muted">
+                Enter a valid email address
+              </small>
             </div>
 
             <div class="col-12 col-sm-6 mt-3 mt-sm-0">
               <label for="password" class="form-label">Password <span class="required">*</span></label>
               <input type="password"  class="form-control" id="password"
                 required
+                aria-required="true"
                 @blur="() => validatePassword(true)"
                 @input="() => validatePassword(false)"
                 v-model="formData.password"
+                aria-describedby="passwordError"
               />
-              <div v-if="errors.password" class="text-danger small mt-1">
+              <div v-if="errors.password" id="passwordError" class="text-danger small mt-1" role="alert">
                 {{ errors.password }}
               </div>
             </div>
 
             <div class="col-12 col-sm-6 mt-3 mt-sm-0">
-              <label for="gender" class="form-label">Gender</label>
+              <label for="gender" class="form-label">Gender <span class="required">*</span></label>
               <select class="form-select" id="gender"
                 required
+                aria-required="true"
                 v-model="formData.gender"
                 @change="validateGender(true)"
+                aria-describedby="genderError"
               >
                 <option value="">-- Select Gender --</option>
                 <option value="male">Male</option>
                 <option value="female">Female</option>
                 <option value="other">Other</option>
               </select>
-              <div v-if="errors.gender" class="text-danger small mt-1">
+              <div v-if="errors.gender" id="genderError" class="text-danger small mt-1" role="alert">
                 {{ errors.gender }}
               </div>
             </div>
@@ -54,12 +63,13 @@
                 <input type="checkbox" class="form-check-input" id="isAustralian"
                   v-model="formData.isAustralian"
                   @change="validateResident(true)"
+                  aria-describedby="residentError"
                 />
                 <label class="form-check-label" for="isAustralian">
                   Australian Resident?
                 </label>
               </div>
-              <div v-if="errors.resident" class="text-danger">{{ errors.resident }}</div>
+              <div v-if="errors.resident" id="residentError" class="text-danger small" role="alert">{{ errors.resident }}</div>
             </div>
           </div>
 
@@ -69,12 +79,13 @@
           </div>
         </form>
 
-        <div v-if="isRegistered" class="alert alert-success text-center p-4 shadow rounded mt-3">
+        <div v-if="isRegistered" class="alert alert-success text-center p-4 shadow rounded mt-3"  role="status"
+          aria-live="polite">
           Registration successful! Please Login! <router-link to="/firelogin">Login</router-link>.
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup>
@@ -195,5 +206,11 @@ const clearForm = () => {
 .required {
   color: red;
   margin-left: 2px;
+}
+input:focus,
+select:focus,
+button:focus {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
 }
 </style>

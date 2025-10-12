@@ -1,5 +1,5 @@
 <template>
-  <div class="container-fluid mt-5">
+  <main class="container-fluid mt-5" role="main">
     <div class="row justify-content-center">
       <div class="col-12 col-lg-6">
         <h1 class="text-center"> Admin Login</h1>
@@ -13,6 +13,7 @@
               class="form-control"
               id="email"
               required
+              aria-required="true"
               v-model="email"
             />
           </div>
@@ -24,11 +25,12 @@
               class="form-control"
               id="password"
               required
+              aria-required="true"
               v-model="password"
             />
           </div>
 
-          <div v-if="error" class="text-danger small mb-2">
+          <div v-if="error" class="text-danger small mb-2" aria-live="assertive">
             {{ error }}
           </div>
 
@@ -38,13 +40,14 @@
           </div>
         </form>
 
-        <div v-if="isLoggedIn" class="alert alert-success text-center p-4 shadow rounded mt-3">
+        <div v-if="isLoggedIn" class="alert alert-success text-center p-4 shadow rounded mt-3" role="status"
+     aria-live="polite">
           Welcome back, {{ loggedInUser?.email }} <br />
-          <router-link to="/home" class="btn btn-success mt-3">Continue!</router-link>
+          <router-link to="/home" class="btn btn-success mt-3" aria-label="Continue to homepage">Continue!</router-link>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup>
@@ -97,7 +100,13 @@ const signin = async () => {
 }
 
 .required {
-  color: red;
+  color: #b30000; 
   margin-left: 2px;
 }
+
+button:focus, input:focus, .btn:focus, a:focus {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+
 </style>

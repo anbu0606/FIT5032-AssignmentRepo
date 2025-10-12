@@ -1,21 +1,26 @@
 <template>
-  <div class="container-fluid mt-5">
+  <main class="container-fluid mt-5" role="main">
     <div class="row justify-content-center">
       <div class="col-12 col-lg-6">
-        <h1 class="text-center">SportyTribe Login</h1>
-        <form @submit.prevent="signin" class="p-4 shadow rounded bg-white">
+        <h1 class="text-center" id="loginTitle">SportyTribe Login</h1>
+        <form @submit.prevent="signin" class="p-4 shadow rounded bg-white" aria-labelledby="loginTitle">
           <p class="text-muted small">Fields marked with <span class="required">*</span> are mandatory.</p>
 
 
           <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
+            <label for="email" class="form-label">Email <span class="required">*</span></label>
             <input
               type="email"
               class="form-control"
               id="email"
               required
               v-model="email"
+              aria-required="true"
+              aria-describedby="emailHelp emailError"
             />
+            <small id="emailHelp" class="form-text text-muted">
+              Enter your email address
+            </small>
           </div>
 
           <div class="mb-3">
@@ -26,27 +31,31 @@
               id="password"
               required
               v-model="password"
+              aria-required="true"
+              aria-describedby="passwordError"
             />
           </div>
 
-          <div v-if="error" class="text-danger small mb-2">
+          <div v-if="error" id="passwordError"class="text-danger small mb-2" role="alert"
+            aria-live="assertive">
             {{ error }}
           </div>
 
-          <div class="d-flex justify-content-between">
+          <div class="d-flex flex-wrap gap-2 justify-content-between mt-3">
             <button type="submit" class="btn btn-primary">Login</button>
-            <router-link to="/fireregister" class="btn btn-secondary">Register</router-link>
-            <router-link to="/adminlogin" class="btn btn-secondary">Admin Login</router-link>
+            <router-link to="/fireregister" class="btn btn-secondary" aria-label="Go to user registration page">Register</router-link>
+            <router-link to="/adminlogin" class="btn btn-secondary" aria-label="Go to admin login page">Admin Login</router-link>
           </div>
         </form>
 
-        <div v-if="isLoggedIn" class="alert alert-success text-center p-4 shadow rounded mt-3">
+        <div v-if="isLoggedIn" class="alert alert-success text-center p-4 shadow rounded mt-3" role="status"
+          aria-live="polite">
           Welcome back, {{ loggedInUser?.email }} <br />
           <router-link to="/home" class="btn btn-success mt-3">Continue!</router-link>
         </div>
       </div>
     </div>
-  </div>
+  </main>
 </template>
 
 <script setup>
@@ -103,5 +112,11 @@ const signin = async () => {
 .required {
   color: red;
   margin-left: 2px;
+}
+input:focus,
+button:focus,
+a:focus {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
 }
 </style>

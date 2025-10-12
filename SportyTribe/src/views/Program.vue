@@ -6,6 +6,7 @@ import { format } from "date-fns"
 const events = ref(programdata)
 const pastReviews1 = ref("")
 const filters = ref({ global: { value: null } })
+const liveMessage = ref("")
 
 const formatDate = (dateString) => {
   return format(new Date(dateString), "dd/MM/yyyy") // Australian date format
@@ -13,6 +14,8 @@ const formatDate = (dateString) => {
 const ratingUpdation = (event, addRating) => {
    if (!event.ratings) event.ratings = []
   event.ratings.push(addRating)
+    liveMessage.value = `Rating added for ${event.name}. Average rating now ${getAverage(event)}.`
+
 }
 
 const getAverage = (event) => {
@@ -26,13 +29,14 @@ const customerReview = (event) => {
   const newReviews = pastReviews1.value.trim()
 
    if (newReviews.length < 3) {
-    alert("Review mucharacters.")
+       liveMessage.value = "Review must contain at least three characters."
     return
   }
 
 
 
   event.reviews.push(newReviews)
+  liveMessage.value = `New review added for ${event.name}.`
   pastReviews1.value = ""
 
 }
@@ -40,46 +44,50 @@ const customerReview = (event) => {
 </script>
 
 <template>
-  <div class="container py-5">
-    <h1> Upcoming Programs & Events</h1>
+  <main class="container py-5" role="main">
+    <h1 id="programHeading"> Upcoming Programs & Events</h1>
     <p class="text-muted">Browse upcoming sporting community activities!</p>
 
     <div class="mb-3">
-      <span class="p-input">
-        <InputText v-model="filters.global.value" placeholder="Search events..." />
-      </span>
+            <label for="searchEvents" class="form-label visually-hidden">Search events</label>
+        <InputText id="searchEvents" v-model="filters.global.value" placeholder="Search events..." aria-label="Search events"
+        class="p-input" />
+      
     </div>
 
-    <DataTable :value="events" :filters="filters" paginator :rows="3" :rowsPerPageOptions="[3,5, 10, 20, 50]" tableStyle="min-width: 50rem" sortMode="multiple" filterDisplay="menu" responsiveLayout="scroll" >
+    <DataTable :value="events" :filters="filters" paginator :rows="3" :rowsPerPageOptions="[3,5, 10, 20, 50]" tableStyle="min-width: 50rem" sortMode="multiple" filterDisplay="menu" responsiveLayout="scroll" aria-describedby="programHeading" >
       <Column field="name" header="Event" sortable filter filterPlaceholder="Search by name" style="width: 25%"></Column>
       <Column field="date" header="Date" sortable style="width: 25%">
       <template #body="{ data }"> {{ formatDate(data.date) }}
       </template>
       </Column>
       <Column field="location" header="Location" sortable filter filterPlaceholder="Search by location" style="width: 25%"></Column>
-      <Column header="Rating" style="width: 50%">
+      <Column header="Rating" style="width: 30%">
         <template #body="{ data }">
           <div class="d-flex flex-column align-items-start">
-            <Rating v-model="data.userRating" :cancel="false" @update:modelValue="ratingUpdation(data, $event)" />
+            <label :for="'rating-' + data.name" class="visually-hidden">Rate {{ data.name }}</label>
+            <Rating :id="'rating-' + data.name" v-model="data.userRating" :cancel="false" @update:modelValue="ratingUpdation(data, $event)"  aria-label="Rating stars for {{ data.name }}" />
             <small class="text-muted mt-1"> Average: {{ getAverage(data) }} </small>
           </div>
         </template>
       </Column>
-        <Column header="Reviews" style="width: 35%">
+        <Column header="Reviews" style="width: 40%">
         <template #body="{ data }">
           <div class="review-sec">
             <ul v-if="data.reviews && data.reviews.length" class="list-unstyled">
               <li v-for="(review, i) in data.reviews" :key="i"> {{ review }}</li>
             </ul>
             <div class="d-flex mt-2">
-              <InputText v-model="pastReviews1" placeholder="Add a review" class="me-2" />
-              <Button label="Post" size="small" @click="customerReview(data)" />
+               <label :for="'review-' + data.name" class="visually-hidden">Write a review for {{ data.name }}</label>
+              <InputText  :id="'review-' + data.name" v-model="pastReviews1" placeholder="Add a review" aria-label="Add a review for {{ data.name }}" class="me-2" />
+              <Button label="Post" size="small" @click="customerReview(data)" aria-label="Post review" />
             </div>
           </div>
         </template>
       </Column>
     </DataTable>
-  </div>
+    <p aria-live="polite" class="visually-hidden">{{ liveMessage }}</p>
+  </main>
 </template>
 
 <style>
@@ -92,5 +100,23 @@ const customerReview = (event) => {
 .review-sec {
   max-height: 120px;
   overflow-y: auto;
+}
+.visually-hidden {
+  position: absolute !important;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip: rect(0, 0, 0, 0);
+  border: 0;
+}
+input:focus,
+button:focus,
+.p-button:focus,
+.p-inputtext:focus,
+select:focus {
+  outline: 3px solid #ffeb3b;
+  outline-offset: 3px;
 }
 </style>

@@ -14,6 +14,7 @@ import Rating from 'primevue/rating'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import router from './router'
+import 'leaflet/dist/leaflet.css'
 
 
 const app = createApp(App)

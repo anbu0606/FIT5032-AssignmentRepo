@@ -1,34 +1,38 @@
 <template>
-  <div class="container mt-5">
-    <h1>Contact Us</h1>
-    <form @submit.prevent="sendEmail" class="p-4 shadow rounded bg-white">
+ <main class="container mt-5" role="main">
+    <h1 id="pageTitle">Contact Us</h1>
+    <form @submit.prevent="sendEmail" class="p-4 shadow rounded bg-white" aria-labelledby="pageTitle">
       <div class="mb-3">
         <label>Email <span class="text-danger">*</span></label>
-        <input type="email" v-model="email" required class="form-control" />
+        <input type="email" v-model="email" required aria-required="true" class="form-control" />
       </div>
 
       <div class="mb-3">
-        <label>Subject <span class="text-danger">*</span></label>
-        <input type="text" v-model="subject" required class="form-control" />
+        <label for="subject">Subject <span class="text-danger">*</span></label>
+        <input type="text" id="subject" v-model="subject" required aria-required="true" class="form-control" />
       </div>
 
       <div class="mb-3">
-        <label>Message <span class="text-danger">*</span></label>
-        <textarea v-model="message" required class="form-control"></textarea>
+        <label for="message">Message <span class="text-danger">*</span></label>
+        <textarea id="message" v-model="message" required aria-required="true" class="form-control" rows="5"></textarea>
       </div>
 
       <div class="mb-3">
-        <label>Attach a file (optional)</label>
-        <input type="file" @change="onFileChange" class="form-control" />
+        <label for="fileInput">Attach a file (optional)</label>
+        <input type="file" id="fileInput" @change="onFileChange" class="form-control" aria-describedby="fileHelp" />
+        <small id="fileHelp" class="form-text text-muted">
+          You may attach a document.
+        </small>
       </div>
 
-      <button class="btn btn-success" type="submit" :disabled="loading">
+      <button class="btn btn-success" type="submit" :disabled="loading" aria-busy="loading">
         {{ loading ? "Sending..." : "Send Email" }}
       </button>
 
-      <p v-if="statusMessage" class="mt-3" :class="statusClass">{{ statusMessage }}</p>
+      <p v-if="statusMessage" class="mt-3" :class="statusClass"  role="status"
+        aria-live="polite">{{ statusMessage }}</p>
     </form>
-  </div>
+ </main>
 </template>
 
 <script setup>
@@ -109,9 +113,18 @@ form {
   margin: auto;
 }
 .text-danger {
-  color: red;
+  color: #b30000;
 }
 .text-success {
-  color: green;
+  color: #007a00;
+}
+input:focus,
+textarea:focus,
+button:focus {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+label {
+  font-weight: 600;
 }
 </style>

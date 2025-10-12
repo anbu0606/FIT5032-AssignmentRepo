@@ -30,19 +30,21 @@ const getStatusClass = (status) => {
 </script>
 
 <template>
-  <div class="container py-5">
-    <h1>Registered Users & Their Events</h1>
-    <p class="text-muted mb-4">
+  <main class="container py-5" role="main">
+    <h1 id="pageTitle">Registered Users & Their Events</h1>
+    <p id="pageDesc" class="text-muted mb-4">
       View, sort, and search user event registrations below.
     </p>
 
     <div class="mb-3">
-      <span class="p-input">
+      <label for="searchInput" class="visually-hidden">Search users or events</label>
         <InputText
+        id="searchInput"
           v-model="filters.global.value"
           placeholder="Search users or events..."
+          aria-labelledby="searchInput pageTitle"
+        class="search-input"
         />
-      </span>
     </div>
 
     <DataTable
@@ -56,6 +58,8 @@ const getStatusClass = (status) => {
       responsiveLayout="scroll"
       stripedRows
       tableStyle="min-width: 60rem"
+      aria-labelledby="pageTitle pageDesc"
+      aria-label="Registered user event table"
     >
       <Column
         field="name"
@@ -110,14 +114,20 @@ const getStatusClass = (status) => {
         <template #body="{ data }">
           <span :class="['badge', getStatusClass(data.Status)]">
             {{ data.Status }}
+            <span class="visually-hidden"> status</span>
           </span>
         </template>
       </Column>
     </DataTable>
-  </div>
+  </main>
 </template>
 
 <style scoped>
+.search-input {
+  width: 100%;
+  max-width: 300px;
+  display: inline-block;
+}
 .p-input {
   width: 100%;
   max-width: 300px;
@@ -129,4 +139,22 @@ const getStatusClass = (status) => {
   border-radius: 0.5em;
   font-size: 0.85em;
 }
+.visually-hidden {
+  position: absolute !important;
+  width: 1px !important;
+  height: 1px !important;
+  padding: 0 !important;
+  margin: -1px !important;
+  overflow: hidden !important;
+  clip: rect(0 0 0 0) !important;
+  border: 0 !important;
+}
+input:focus,
+button:focus,
+a:focus,
+.p-paginator button:focus {
+  outline: 3px solid #005fcc;
+  outline-offset: 2px;
+}
+
 </style>
