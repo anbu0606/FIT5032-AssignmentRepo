@@ -2,11 +2,18 @@
 import Headernav from './components/headernav.vue';
 </script>
 <template>
-      <div class = "main-container bg-light min-vh-00">
-  <headernav/>
-  <main class ="main-container py-4">
+      <div class = "main-container bg-light min-vh-100">
+      <a href="#mainContent" class="skip-link">Skip to the main content</a>
+        <header>
+      <Headernav />
+    </header>
+
+    <main id="mainContent" class="main-content py-4" role="main" tabindex="-1">
     <router-view/>
   </main>
+    <footer class="footer text-center py-3">
+      <small>&copy; 2025 SportyTribe</small>
+    </footer>
   </div>
 </template>
 
@@ -16,6 +23,24 @@ import Headernav from './components/headernav.vue';
   display: flex;
   flex-direction: column;
   background: linear-gradient(180deg, #ffffff, #ffffff);
+}
+.skip-link {
+  position: absolute;
+  top: -40px;
+  left: 10px;
+  background: #004aad;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 4px;
+  z-index: 1000;
+  transition: top 0.3s ease;
+}
+.main-content:focus {
+  outline: 3px solid #ffeb3b;
+  outline-offset: 4px;
+}
+.skip-link:focus {
+  top: 10px;
 }
 
 nav.navbar {

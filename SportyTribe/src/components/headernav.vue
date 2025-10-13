@@ -1,12 +1,13 @@
 <template>
   <header class="sporty-navbar shadow sticky-top">
     <div class="container-fluid" >
-      <nav class="navbar navbar-expand-md navbar-dark">
+      <nav class="navbar navbar-expand-md navbar-dark" aria-label="Main Navigation">
         <div class="d-flex align-items-center">
           <img src="@/assets/runningIcon.jpg" alt="SportyTribe Logo" class="brand-icon me-2" />
           <router-link class="navbar-brand fw-bold fs-3" to="/home">SportyTribe</router-link>
         </div>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" >
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-expanded="false"
+          aria-label="Toggle navigation" >
           <span class="navbar-toggler-icon"></span>
         </button>
         <div class="collapse navbar-collapse" id="navbarNav">
@@ -109,7 +110,7 @@ const logout = async () => {
 <style scoped>
 
 .sporty-navbar {
-  background: linear-gradient(90deg, #004d40, #00c896);
+  background: linear-gradient(90deg, #004d40, #009e80);
 }
 .brand-icon {
   width: 40px;
@@ -117,31 +118,39 @@ const logout = async () => {
   object-fit: cover;
   border-radius: 50%;
 }
+.nav-link:focus,
+.btn:focus {
+  outline: 3px solid #ffeb3b;
+  outline-offset: 3px;
+}
 .nav-link {
-  color: white;
+  color: #fff;
   font-weight: 500;
   transition: 0.3s;
   border-radius: 8px;
 }
+
 .nav-link:hover {
   background: rgba(255, 255, 255, 0.2);
 }
 
 .navbar-brand {
-  color: white;
-  transition: 0.3s;
+  color: #fff;
 }
 
 .btn-accent,
 .btn-primary{
-  background: #ff5722;
-  color: white;
+    background: #ff5722;
+  color: #fff;
   border: none;
-  transition: 0.3s;
   border-radius: 8px;
 }
-.btn-accent:hover,
-.btn-primary:hover {
-  background: #e63946;
+.btn-primary:hover,
+.btn-primary:focus {
+  background: #e64a19;
+}
+.btn-danger:focus {
+  outline: 3px solid #ffeb3b;
+  outline-offset: 3px;
 }
 </style>
