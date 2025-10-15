@@ -8,14 +8,16 @@ import AdminReg from '@/views/AdminReg.vue'
 import Contact from '@/views/Contact.vue'
 import AdminUserEventsList from '@/views/AdminUserEventsList.vue'
 import NearbyEvents from '@/views/NearbyEvents.vue'
-
+import Resources from '@/views/Resources.vue'
+import DetailedResources from '@/views/DetailedResources.vue'
 
 
 const routes = [
    {
     path: '/',    
     name: 'Home',
-    component: Home
+    component: Home,
+    meta: { title: "Home - SportyTribe" }
   },
    {
     path: '/home',
@@ -25,6 +27,17 @@ const routes = [
     path: '/program',   
     name: 'Program',
     component: Program
+  },
+   {
+    path: '/resources',   
+    name: 'Resources',
+    component: Resources
+  },
+   {
+    path: "/resources/:id",   
+    name: 'DetailedResources',
+    component: DetailedResources,
+     props: true,
   },
    {
     path: '/nearbyevents',   
@@ -67,5 +80,10 @@ const router = createRouter({
   history: createWebHistory(),
   routes
 })
+
+router.afterEach((to) => {
+  document.title = to.meta.title || "SportyTribe";
+});
+
 
 export default router

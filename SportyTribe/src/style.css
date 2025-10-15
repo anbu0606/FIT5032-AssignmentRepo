@@ -30,3 +30,6 @@ label {
   margin-bottom: 4px;
   color: #222;
 }
+:focus-visible {
+  outline: 3px solid #fbc02d;
+}

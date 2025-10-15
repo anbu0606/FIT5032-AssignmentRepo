@@ -3,34 +3,76 @@
     <h1 id="pageTitle">Contact Us</h1>
     <form @submit.prevent="sendEmail" class="p-4 shadow rounded bg-white" aria-labelledby="pageTitle">
       <div class="mb-3">
-        <label>Email <span class="text-danger">*</span></label>
-        <input type="email" v-model="email" required aria-required="true" class="form-control" />
+        <label for="email">Your Email <span class="text-danger">*</span></label>
+        <input 
+          id="email" 
+          type="email" 
+          v-model="email" 
+          required 
+          aria-required="true" 
+          class="form-control" 
+          placeholder="Enter your email" 
+        />
       </div>
 
       <div class="mb-3">
         <label for="subject">Subject <span class="text-danger">*</span></label>
-        <input type="text" id="subject" v-model="subject" required aria-required="true" class="form-control" />
+        <input 
+          type="text" 
+          id="subject" 
+          v-model="subject" 
+          required 
+          aria-required="true" 
+          class="form-control" 
+          placeholder="Enter subject" 
+        />
       </div>
 
       <div class="mb-3">
         <label for="message">Message <span class="text-danger">*</span></label>
-        <textarea id="message" v-model="message" required aria-required="true" class="form-control" rows="5"></textarea>
+        <textarea 
+          id="message" 
+          v-model="message" 
+          required 
+          aria-required="true" 
+          class="form-control" 
+          rows="5" 
+          placeholder="Type your message here"
+        ></textarea>
       </div>
 
       <div class="mb-3">
         <label for="fileInput">Attach a file (optional)</label>
-        <input type="file" id="fileInput" @change="onFileChange" class="form-control" aria-describedby="fileHelp" />
+        <input 
+          type="file" 
+          id="fileInput" 
+          @change="onFileChange" 
+          class="form-control" 
+          aria-describedby="fileHelp" 
+        />
         <small id="fileHelp" class="form-text text-muted">
           You may attach a document.
         </small>
       </div>
 
-      <button class="btn btn-success" type="submit" :disabled="loading" aria-busy="loading">
+      <button 
+        class="btn btn-success" 
+        type="submit" 
+        :disabled="loading" 
+        aria-busy="loading"
+      >
         {{ loading ? "Sending..." : "Send Email" }}
       </button>
 
-      <p v-if="statusMessage" class="mt-3" :class="statusClass"  role="status"
-        aria-live="polite">{{ statusMessage }}</p>
+      <p 
+        v-if="statusMessage" 
+        class="mt-3" 
+        :class="statusClass"  
+        role="status"
+        aria-live="polite"
+      >
+        {{ statusMessage }}
+      </p>
     </form>
  </main>
 </template>
@@ -45,7 +87,7 @@ const file = ref(null)
 const loading = ref(false)
 const statusMessage = ref("")
 const statusClass = ref("")
-//  your deployed Cloud Run URL (from deploy log)
+
 const functionURL = "https://sendemail-c5melirmcq-uc.a.run.app"
 
 const onFileChange = (e) => {
@@ -68,34 +110,46 @@ const sendEmail = async () => {
       }
     }
 
+    const formattedMessage = `
+ New contact form submission received!
+
+From: ${email.value}
+
+Subject: ${subject.value}
+
+Message:
+${message.value}
+
+Submitted on: ${new Date().toLocaleString()}
+    `
+
     const res = await fetch(functionURL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        to: email.value,
-        subject: subject.value,
-        text: message.value,
+        to: "anbuchandran06@gmail.com",
+        subject: `[Contact Form] ${subject.value}`,
+        text: formattedMessage,
         attachment: attachmentData,
       }),
     })
 
     const data = await res.json()
     if (res.ok) {
-      statusMessage.value = " " + data.message
+      statusMessage.value = data.message
       statusClass.value = "text-success"
     } else {
-      statusMessage.value = " Failed: " + data.message
+      statusMessage.value =  data.message
       statusClass.value = "text-danger"
     }
   } catch (err) {
     console.error("Email send failed:", err)
-    statusMessage.value = " Error sending email."
+    statusMessage.value = "Error sending email."
     statusClass.value = "text-danger"
   } finally {
     loading.value = false
   }
 }
-
 
 const toBase64 = (file) =>
   new Promise((resolve, reject) => {
@@ -105,7 +159,6 @@ const toBase64 = (file) =>
     reader.onerror = (error) => reject(error)
   })
 </script>
-
 
 <style scoped>
 form {

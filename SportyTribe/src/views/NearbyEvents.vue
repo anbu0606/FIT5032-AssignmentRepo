@@ -141,7 +141,7 @@ function getDistance([lat1, lon1], [lat2, lon2]) {
 }
 .route-btn:focus,
 select:focus {
-  outline: 3px solid #ffeb3b;
+  outline: 3px solid #fbc02d;
   outline-offset: 3px;
 }
 .route-btn {

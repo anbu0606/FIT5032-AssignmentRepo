@@ -1,5 +1,5 @@
 <template>
-  <header class="sporty-navbar shadow sticky-top">
+  <header class="sporty-navbar shadow sticky-top" role="banner" aria-label="Site Header">
     <div class="container-fluid" >
       <nav class="navbar navbar-expand-md navbar-dark" aria-label="Main Navigation">
         <div class="d-flex align-items-center">

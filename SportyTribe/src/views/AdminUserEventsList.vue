@@ -2,16 +2,13 @@
 import { ref } from "vue"
 import adminUserEvents from "../assets/json/adminUserEvents.json"
 import { format } from "date-fns"
-
+import jsPDF from "jspdf"
+import autoTable from "jspdf-autotable"
 
 const userEvents = ref(adminUserEvents)
 const filters = ref({ global: { value: null } })
 
-
-const formatDate = (dateString) => {
-  return format(new Date(dateString), "dd/MM/yyyy")
-}
-
+const formatDate = (dateString) => format(new Date(dateString), "dd/MM/yyyy")
 
 const getStatusClass = (status) => {
   switch (status) {
@@ -27,6 +24,35 @@ const getStatusClass = (status) => {
       return "bg-secondary text-white"
   }
 }
+
+const exportCSV = () => {
+  if (!userEvents.value.length) return
+
+  const headers = Object.keys(userEvents.value[0]).join(",")
+  const rows = userEvents.value.map((item) => Object.values(item).join(","))
+  const csv = [headers, ...rows].join("\n")
+
+  const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
+  const url = URL.createObjectURL(blob)
+  const link = document.createElement("a")
+  link.href = url
+  link.download = "RegisteredUsers.csv"
+  link.click()
+  URL.revokeObjectURL(url)
+}
+
+const exportPDF = () => {
+  const doc = new jsPDF()
+doc.text("Registered Users & Their Events", 14, 15)
+autoTable(doc, {
+  head: [Object.keys(userEvents.value[0])],
+  body: userEvents.value.map((p) => Object.values(p)),
+  startY: 25,
+  styles: { fontSize: 10 },
+  headStyles: { fillColor: [0, 100, 0] },
+})
+doc.save("RegisteredUsers.pdf")
+}
 </script>
 
 <template>
@@ -36,15 +62,35 @@ const getStatusClass = (status) => {
       View, sort, and search user event registrations below.
     </p>
 
+    <div class="d-flex justify-content-end mb-3 gap-2 flex-wrap">
+      <button
+        class="btn btn-success"
+        @click="exportCSV"
+        aria-label="Export table data as CSV file"
+      >
+        📄 Export as CSV
+      </button>
+      <button
+        class="btn btn-danger"
+        @click="exportPDF"
+        aria-label="Export table data as PDF file"
+      >
+        🧾 Export as PDF
+      </button>
+    </div>
+
+    <!-- Search Field -->
     <div class="mb-3">
-      <label for="searchInput" class="visually-hidden">Search users or events</label>
-        <InputText
+      <label for="searchInput" class="visually-hidden"
+        >Search users or events</label
+      >
+      <InputText
         id="searchInput"
-          v-model="filters.global.value"
-          placeholder="Search users or events..."
-          aria-labelledby="searchInput pageTitle"
+        v-model="filters.global.value"
+        placeholder="Search users or events..."
+        aria-labelledby="searchInput pageTitle"
         class="search-input"
-        />
+      />
     </div>
 
     <DataTable
@@ -128,17 +174,13 @@ const getStatusClass = (status) => {
   max-width: 300px;
   display: inline-block;
 }
-.p-input {
-  width: 100%;
-  max-width: 300px;
-  display: inline-block;
-}
 
 .badge {
   padding: 0.4em 0.7em;
   border-radius: 0.5em;
   font-size: 0.85em;
 }
+
 .visually-hidden {
   position: absolute !important;
   width: 1px !important;
@@ -149,6 +191,7 @@ const getStatusClass = (status) => {
   clip: rect(0 0 0 0) !important;
   border: 0 !important;
 }
+
 input:focus,
 button:focus,
 a:focus,
@@ -157,4 +200,7 @@ a:focus,
   outline-offset: 2px;
 }
 
+.btn {
+  border-radius: 6px;
+}
 </style>

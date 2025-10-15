@@ -27,7 +27,7 @@
 }
 a:focus,
 button:focus {
-  outline: 3px solid #ffeb3b;
+  outline: 3px solid #fbc02d;
   outline-offset: 3px;
 }
 </style>
