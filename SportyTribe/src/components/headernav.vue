@@ -50,7 +50,7 @@
 
 
         <li v-if="userRole === 'admin'" class="nav-item">
-              <router-link to="/admin-dashboard" class="nav-link px-3 text-warning fw-bold">Admin Dashboard</router-link>
+              <router-link to="/admindashboard" class="nav-link px-3 text-warning fw-bold">Admin Dashboard</router-link>
             </li>
              <li v-if="userRole === 'admin'" class="nav-item">
               <router-link to="/adminusereventslist" class="nav-link px-3 text-warning fw-bold">Participant List</router-link>

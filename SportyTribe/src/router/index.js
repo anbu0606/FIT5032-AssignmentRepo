@@ -10,7 +10,8 @@ import AdminUserEventsList from '@/views/AdminUserEventsList.vue'
 import NearbyEvents from '@/views/NearbyEvents.vue'
 import Resources from '@/views/Resources.vue'
 import DetailedResources from '@/views/DetailedResources.vue'
-
+import AdminDashboard from '@/views/AdminDashboard.vue'
+import Calendar from '@/views/Calendar.vue'
 
 const routes = [
    {
@@ -27,6 +28,16 @@ const routes = [
     path: '/program',   
     name: 'Program',
     component: Program
+  },
+  {
+    path: '/calendar',   
+    name: 'Calendar',
+    component: Calendar
+  },
+   {
+    path: '/admindashboard',   
+    name: 'AdminDashboard',
+    component: AdminDashboard
   },
    {
     path: '/resources',   

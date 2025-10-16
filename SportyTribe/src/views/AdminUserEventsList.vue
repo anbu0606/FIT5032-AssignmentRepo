@@ -1,33 +1,40 @@
 <script setup>
-import { ref } from "vue"
-import adminUserEvents from "../assets/json/adminUserEvents.json"
+import { ref, onMounted } from "vue"
 import { format } from "date-fns"
 import jsPDF from "jspdf"
 import autoTable from "jspdf-autotable"
+import { getFirestore, collection, getDocs } from "firebase/firestore"
+import { db } from "@/firebase/init"
 
-const userEvents = ref(adminUserEvents)
+const userEvents = ref([])
 const filters = ref({ global: { value: null } })
+const loading = ref(true)
+
+onMounted(async () => {
+  try {
+    const querySnapshot = await getDocs(collection(db, "adminUserEvents"))
+    userEvents.value = querySnapshot.docs.map((doc) => doc.data())
+  } catch (err) {
+    console.error("Error loading events:", err)
+  } finally {
+    loading.value = false
+  }
+})
 
 const formatDate = (dateString) => format(new Date(dateString), "dd/MM/yyyy")
 
 const getStatusClass = (status) => {
   switch (status) {
-    case "Registered":
-      return "bg-success text-white"
-    case "Pending":
-      return "bg-warning text-dark"
-    case "Cancelled":
-      return "bg-danger text-white"
-    case "Confirmed":
-      return "bg-info text-white"
-    default:
-      return "bg-secondary text-white"
+    case "Registered": return "bg-success text-white"
+    case "Pending": return "bg-warning text-dark"
+    case "Cancelled": return "bg-danger text-white"
+    case "Confirmed": return "bg-info text-white"
+    default: return "bg-secondary text-white"
   }
 }
 
 const exportCSV = () => {
   if (!userEvents.value.length) return
-
   const headers = Object.keys(userEvents.value[0]).join(",")
   const rows = userEvents.value.map((item) => Object.values(item).join(","))
   const csv = [headers, ...rows].join("\n")
@@ -42,16 +49,17 @@ const exportCSV = () => {
 }
 
 const exportPDF = () => {
+  if (!userEvents.value.length) return
   const doc = new jsPDF()
-doc.text("Registered Users & Their Events", 14, 15)
-autoTable(doc, {
-  head: [Object.keys(userEvents.value[0])],
-  body: userEvents.value.map((p) => Object.values(p)),
-  startY: 25,
-  styles: { fontSize: 10 },
-  headStyles: { fillColor: [0, 100, 0] },
-})
-doc.save("RegisteredUsers.pdf")
+  doc.text("Registered Users & Their Events", 14, 15)
+  autoTable(doc, {
+    head: [Object.keys(userEvents.value[0])],
+    body: userEvents.value.map((p) => Object.values(p)),
+    startY: 25,
+    styles: { fontSize: 10 },
+    headStyles: { fillColor: [0, 100, 0] },
+  })
+  doc.save("RegisteredUsers.pdf")
 }
 </script>
 
@@ -68,22 +76,19 @@ doc.save("RegisteredUsers.pdf")
         @click="exportCSV"
         aria-label="Export table data as CSV file"
       >
-        📄 Export as CSV
+        Export as CSV
       </button>
       <button
         class="btn btn-danger"
         @click="exportPDF"
         aria-label="Export table data as PDF file"
       >
-        🧾 Export as PDF
+        Export as PDF
       </button>
     </div>
 
-    <!-- Search Field -->
     <div class="mb-3">
-      <label for="searchInput" class="visually-hidden"
-        >Search users or events</label
-      >
+      <label for="searchInput" class="visually-hidden">Search users or events</label>
       <InputText
         id="searchInput"
         v-model="filters.global.value"
@@ -94,6 +99,7 @@ doc.save("RegisteredUsers.pdf")
     </div>
 
     <DataTable
+      v-if="!loading"
       :value="userEvents"
       :filters="filters"
       paginator
@@ -107,64 +113,24 @@ doc.save("RegisteredUsers.pdf")
       aria-labelledby="pageTitle pageDesc"
       aria-label="Registered user event table"
     >
-      <Column
-        field="name"
-        header="User Name"
-        sortable
-        filter
-        filterPlaceholder="Search by name"
-        style="width: 20%"
-      ></Column>
-
-      <Column
-        field="email"
-        header="Email"
-        sortable
-        filter
-        filterPlaceholder="Search by email"
-        style="width: 25%"
-      ></Column>
-
-      <Column
-        field="Event"
-        header="Registered Event"
-        sortable
-        filter
-        filterPlaceholder="Search by event"
-        style="width: 20%"
-      ></Column>
-
+      <Column field="name" header="User Name" sortable filter filterPlaceholder="Search by name" style="width: 20%" />
+      <Column field="email" header="Email" sortable filter filterPlaceholder="Search by email" style="width: 25%" />
+      <Column field="Event" header="Registered Event" sortable filter filterPlaceholder="Search by event" style="width: 20%" />
       <Column field="date" header="Event Date" sortable style="width: 15%">
-        <template #body="{ data }">
-          {{ formatDate(data.date) }}
-        </template>
+        <template #body="{ data }">{{ formatDate(data.date) }}</template>
       </Column>
-
-      <Column
-        field="Location"
-        header="Location"
-        sortable
-        filter
-        filterPlaceholder="Search by location"
-        style="width: 15%"
-      ></Column>
-
-      <Column
-        field="Status"
-        header="Status"
-        sortable
-        filter
-        filterPlaceholder="Search by status"
-        style="width: 10%"
-      >
+      <Column field="Location" header="Location" sortable filter filterPlaceholder="Search by location" style="width: 15%" />
+      <Column field="Status" header="Status" sortable filter filterPlaceholder="Search by status" style="width: 10%">
         <template #body="{ data }">
-          <span :class="['badge', getStatusClass(data.Status)]">
-            {{ data.Status }}
-            <span class="visually-hidden"> status</span>
-          </span>
+          <span :class="['badge', getStatusClass(data.Status)]">{{ data.Status }}</span>
         </template>
       </Column>
     </DataTable>
+
+    <div v-else class="text-center py-5">
+      <div class="spinner-border text-primary" role="status" aria-label="Loading data"></div>
+      <p class="mt-3 text-muted">Loading events...</p>
+    </div>
   </main>
 </template>
 
@@ -174,13 +140,11 @@ doc.save("RegisteredUsers.pdf")
   max-width: 300px;
   display: inline-block;
 }
-
 .badge {
   padding: 0.4em 0.7em;
   border-radius: 0.5em;
   font-size: 0.85em;
 }
-
 .visually-hidden {
   position: absolute !important;
   width: 1px !important;
@@ -191,7 +155,6 @@ doc.save("RegisteredUsers.pdf")
   clip: rect(0 0 0 0) !important;
   border: 0 !important;
 }
-
 input:focus,
 button:focus,
 a:focus,
@@ -199,7 +162,6 @@ a:focus,
   outline: 3px solid #005fcc;
   outline-offset: 2px;
 }
-
 .btn {
   border-radius: 6px;
 }
