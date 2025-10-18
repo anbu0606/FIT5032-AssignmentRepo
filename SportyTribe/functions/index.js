@@ -1,17 +1,19 @@
 const { onRequest } = require("firebase-functions/v2/https");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { defineSecret } = require("firebase-functions/params");
+const { onSchedule } = require("firebase-functions/v2/scheduler");
 const logger = require("firebase-functions/logger");
 const sgMail = require("@sendgrid/mail");
 const admin = require("firebase-admin");
+const fetch = require("node-fetch");
 
 admin.initializeApp();
 
+// === Secrets ===
 const SENDGRID_API_KEY = defineSecret("SENDGRID_API_KEY");
+const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
 
-// ======================
-// Existing Contact Form Email
-// ======================
+// === EMAIL FUNCTION ===
 exports.sendEmail = onRequest(
   {
     secrets: [SENDGRID_API_KEY],
@@ -37,7 +39,7 @@ exports.sendEmail = onRequest(
       }
 
       const msg = {
-        to: "anbuchandran06@gmail.com", // fixed recipient for contact form
+        to: "anbuchandran06@gmail.com",
         from: "anbu.amaze@gmail.com",
         subject,
         text,
@@ -69,9 +71,7 @@ exports.sendEmail = onRequest(
   }
 );
 
-// ======================
-// New Bulk Event Cancellation Email Function
-// ======================
+// === BULK EVENT EMAIL ===
 exports.sendBulkEventEmail = onRequest(
   {
     secrets: [SENDGRID_API_KEY],
@@ -119,9 +119,7 @@ exports.sendBulkEventEmail = onRequest(
   }
 );
 
-// ======================
-// 🔹 NEW: Firestore Data Validator (Auto-trigger)
-// ======================
+// === DATA VALIDATION ===
 exports.validateBookingData = onDocumentCreated(
   "adminUserEvents/{docId}",
   async (event) => {
@@ -132,7 +130,6 @@ exports.validateBookingData = onDocumentCreated(
     const docRef = doc.ref;
     const issues = [];
 
-    // Validate required fields
     if (!data.name || data.name.trim().length < 3) {
       issues.push("Invalid or missing name");
     }
@@ -146,7 +143,6 @@ exports.validateBookingData = onDocumentCreated(
       issues.push("Missing event details");
     }
 
-    // Update document based on validation result
     if (issues.length > 0) {
       await docRef.update({
         Status: "Pending Review",
@@ -166,48 +162,84 @@ exports.validateBookingData = onDocumentCreated(
   }
 );
 
+// === AUTO-COMPLETE PAST EVENTS ===
+exports.autoCompletePastEvents = onSchedule("every 24 hours", async () => {
+  const db = admin.firestore();
+  const today = new Date();
 
+  try {
+    const snapshot = await db
+      .collection("adminUserEvents")
+      .where("Status", "==", "Registered")
+      .get();
 
+    const batch = db.batch();
+    let updatedCount = 0;
 
-// ======================
-// 🔹 Scheduled Function: Auto-Complete Past Events
-// ======================
-const { onSchedule } = require("firebase-functions/v2/scheduler");
+    snapshot.forEach((doc) => {
+      const eventDate = new Date(doc.data().date);
+      if (eventDate < today) {
+        batch.update(doc.ref, { Status: "Completed" });
+        updatedCount++;
+      }
+    });
 
-exports.autoCompletePastEvents = onSchedule(
-  "every 24 hours",
-  async (event) => {
-    const db = admin.firestore();
-    const today = new Date();
+    if (updatedCount > 0) {
+      await batch.commit();
+      logger.info(`Updated ${updatedCount} past events to Completed.`);
+    } else {
+      logger.info("No past events found to update.");
+    }
+
+    return null;
+  } catch (err) {
+    logger.error("autoCompletePastEvents failed:", err);
+    throw err;
+  }
+});
+
+// === GEMINI CHATBOT FUNCTION ===
+exports.getGeminiResponse = onRequest(
+  {
+    secrets: [GEMINI_API_KEY],
+    cors: ["http://localhost:5173", "https://fit5032-assignmentrepo.pages.dev"],
+  },
+  async (req, res) => {
+    res.set("Access-Control-Allow-Origin", "*");
+    res.set("Access-Control-Allow-Methods", "POST, OPTIONS");
+    res.set("Access-Control-Allow-Headers", "Content-Type");
+
+    if (req.method === "OPTIONS") return res.status(204).send("");
+
+    const { question } = req.body;
+
+    if (!question) {
+      return res.status(400).json({ error: "Missing question" });
+    }
 
     try {
-      const snapshot = await db
-        .collection("adminUserEvents")
-        .where("Status", "==", "Registered")
-        .get();
+      const GEMINI_KEY = GEMINI_API_KEY.value();
 
-      const batch = db.batch();
-      let updatedCount = 0;
-
-      snapshot.forEach((doc) => {
-        const eventDate = new Date(doc.data().date);
-        if (eventDate < today) {
-          batch.update(doc.ref, { Status: "Completed" });
-          updatedCount++;
+      const response = await fetch(
+        `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            contents: [{ role: "user", parts: [{ text: question }] }],
+          }),
         }
-      });
+      );
 
-      if (updatedCount > 0) {
-        await batch.commit();
-        logger.info(`✅ Updated ${updatedCount} past events to Completed.`);
-      } else {
-        logger.info("ℹ️ No past events found to update.");
-      }
+      const data = await response.json();
+      const text =
+        data?.candidates?.[0]?.content?.parts?.[0]?.text ||
+        "No valid response from Gemini.";
 
-      return null;
+      return res.json({ text });
     } catch (err) {
-      logger.error("❌ autoCompletePastEvents failed:", err);
-      throw err;
+      logger.error("Gemini API error:", err);
+      return res.status(500).json({ error: "Failed to fetch response from Gemini" });
     }
   }
 );

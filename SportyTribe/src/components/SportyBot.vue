@@ -42,12 +42,9 @@
 
 <script setup>
 import { ref, nextTick } from "vue"
-import { GoogleGenAI } from "@google/genai"
 
-const apiKey = import.meta.env.VITE_GEMINI_API_KEY
-if (!apiKey) console.error("Missing Gemini API Key in .env")
-
-const genAI = new GoogleGenAI({ apiKey })
+const GEMINI_FUNCTION_URL =
+  "https://us-central1-sportytribe-45a76.cloudfunctions.net/getGeminiResponse"
 
 const isOpen = ref(false)
 const userInput = ref("")
@@ -62,49 +59,42 @@ const sendMessage = async () => {
   if (question.length < 3) {
     messages.value.push({
       role: "bot",
-      text: "👋 Hey there! Tell me a bit more - what would you like to know about fitness or events?",
+      text: "👋 Hey there! Tell me a bit more — what would you like to know about fitness or events?",
     })
     userInput.value = ""
-    await nextTick(() => {
-      chatBox.value.scrollTop = chatBox.value.scrollHeight
-    })
+    await nextTick(() => (chatBox.value.scrollTop = chatBox.value.scrollHeight))
     return
   }
+
   messages.value.push({ role: "user", text: question })
   userInput.value = ""
   loading.value = true
 
-  await nextTick(() => {
-    chatBox.value.scrollTop = chatBox.value.scrollHeight
-  })
+  await nextTick(() => (chatBox.value.scrollTop = chatBox.value.scrollHeight))
 
   try {
-    const result = await genAI.models.generateContent({
-      model: "gemini-2.0-flash",
-      contents: [{ role: "user", parts: [{ text: question }] }],
+    const response = await fetch(GEMINI_FUNCTION_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ question }),
     })
 
-    let text =
-      (typeof result.text === "function" && result.text()) ||
-      result.text ||
-      result?.candidates?.[0]?.content?.parts?.[0]?.text ||
-      "No valid response from Gemini."
+    const data = await response.json()
+    const text =
+      data.text?.replace(/\n/g, "<br>") || "⚠️ No valid response from Gemini."
 
-    messages.value.push({ role: "bot", text: text.replace(/\n/g, "<br>") })
+    messages.value.push({ role: "bot", text })
   } catch (err) {
-    console.error("Gemini API error:", err)
+    console.error("Gemini Cloud Function error:", err)
     messages.value.push({
       role: "bot",
-      text: " Sorry, I couldn't get a response right now.",
+      text: "❌ Sorry, I couldn't get a response right now.",
     })
   } finally {
     loading.value = false
-    await nextTick(() => {
-      chatBox.value.scrollTop = chatBox.value.scrollHeight
-    })
+    await nextTick(() => (chatBox.value.scrollTop = chatBox.value.scrollHeight))
   }
 }
-
 </script>
 
 <style scoped>
@@ -128,7 +118,6 @@ const sendMessage = async () => {
   transform: scale(1.05);
   background: #0056b3;
 }
-
 .chat-window {
   position: fixed;
   bottom: 90px;
@@ -143,7 +132,6 @@ const sendMessage = async () => {
   border: 1px solid #ddd;
   z-index: 10000;
 }
-
 .chat-header {
   background: #007bff;
   color: white;
@@ -159,7 +147,6 @@ const sendMessage = async () => {
   font-size: 18px;
   cursor: pointer;
 }
-
 .chat-box {
   flex: 1;
   overflow-y: auto;
@@ -193,7 +180,6 @@ const sendMessage = async () => {
   color: #155724;
   border-bottom-left-radius: 4px;
 }
-
 .chat-input {
   display: flex;
   flex-direction: column;
@@ -222,3 +208,4 @@ const sendMessage = async () => {
   background: #0056b3;
 }
 </style>
+
