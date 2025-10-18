@@ -17,16 +17,30 @@ const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
 exports.sendEmail = onRequest(
   {
     secrets: [SENDGRID_API_KEY],
-    cors: ["http://localhost:5173", "https://fit5032-assignmentrepo.pages.dev"],
   },
   async (req, res) => {
-    res.set("Access-Control-Allow-Origin", "*");
+    // ✅ Allow both localhost and your deployed site dynamically
+    const allowedOrigins = [
+      "http://localhost:5173",
+      "https://fit5032-assignmentrepo.pages.dev",
+    ];
+    const origin = req.get("origin");
+    if (allowedOrigins.includes(origin)) {
+      res.set("Access-Control-Allow-Origin", origin);
+    }
+
     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     res.set("Access-Control-Allow-Headers", "Content-Type");
 
-    if (req.method === "OPTIONS") return res.status(204).send("");
-    if (req.method !== "POST")
+    // ✅ Preflight (OPTIONS) request — just return OK
+    if (req.method === "OPTIONS") {
+      return res.status(204).send("");
+    }
+
+    // ✅ Reject non-POST requests
+    if (req.method !== "POST") {
       return res.status(405).json({ message: "Method Not Allowed" });
+    }
 
     try {
       sgMail.setApiKey(SENDGRID_API_KEY.value());
@@ -39,7 +53,7 @@ exports.sendEmail = onRequest(
       }
 
       const msg = {
-        to: "anbuchandran06@gmail.com",
+        to: to || "anbuchandran06@gmail.com",
         from: "anbu.amaze@gmail.com",
         subject,
         text,
@@ -57,12 +71,13 @@ exports.sendEmail = onRequest(
       }
 
       await sgMail.send(msg);
-      logger.info("Contact form email sent successfully");
+      logger.info("✅ Contact form email sent successfully");
+
       return res
         .status(200)
         .json({ success: true, message: "Email sent successfully!" });
     } catch (error) {
-      logger.error("Error sending contact form email:", error);
+      logger.error("❌ Error sending contact form email:", error);
       return res.status(500).json({
         success: false,
         message: error.response?.body?.errors?.[0]?.message || error.message,
@@ -71,24 +86,35 @@ exports.sendEmail = onRequest(
   }
 );
 
-// === BULK EVENT EMAIL ===
+// === BULK EVENT EMAIL FUNCTION ===
 exports.sendBulkEventEmail = onRequest(
   {
     secrets: [SENDGRID_API_KEY],
-    cors: ["http://localhost:5173", "https://fit5032-assignmentrepo.pages.dev"],
   },
   async (req, res) => {
-    res.set("Access-Control-Allow-Origin", "*");
+    // ✅ Dynamic CORS origin handling
+    const allowedOrigins = [
+      "http://localhost:5173",
+      "https://fit5032-assignmentrepo.pages.dev",
+    ];
+    const origin = req.get("origin");
+    if (allowedOrigins.includes(origin)) {
+      res.set("Access-Control-Allow-Origin", origin);
+    }
+
     res.set("Access-Control-Allow-Methods", "GET, POST, OPTIONS");
     res.set("Access-Control-Allow-Headers", "Content-Type");
 
-    if (req.method === "OPTIONS") return res.status(204).send("");
-    if (req.method !== "POST")
+    if (req.method === "OPTIONS") {
+      return res.status(204).send("");
+    }
+
+    if (req.method !== "POST") {
       return res.status(405).json({ message: "Method Not Allowed" });
+    }
 
     try {
       sgMail.setApiKey(SENDGRID_API_KEY.value());
-
       const { participants, subject, text } = req.body;
 
       if (!participants || !Array.isArray(participants) || !subject || !text) {
@@ -106,18 +132,19 @@ exports.sendBulkEventEmail = onRequest(
       });
 
       await Promise.all(promises);
+      logger.info(`✅ Bulk emails sent to ${participants.length} participants`);
 
-      logger.info(`Bulk emails sent to ${participants.length} participants`);
       return res.status(200).json({
         success: true,
         message: `Emails sent to ${participants.length} participants`,
       });
     } catch (error) {
-      logger.error("Error sending bulk event emails:", error);
+      logger.error("❌ Error sending bulk event emails:", error);
       return res.status(500).json({ message: error.message });
     }
   }
 );
+
 
 // === DATA VALIDATION ===
 exports.validateBookingData = onDocumentCreated(
