@@ -59,7 +59,7 @@ const sendMessage = async () => {
   if (question.length < 3) {
     messages.value.push({
       role: "bot",
-      text: "👋 Hey there! Tell me a bit more — what would you like to know about fitness or events?",
+      text: "Hey there! Tell me a bit more - what would you like to know about fitness or events?",
     })
     userInput.value = ""
     await nextTick(() => (chatBox.value.scrollTop = chatBox.value.scrollHeight))
@@ -81,14 +81,14 @@ const sendMessage = async () => {
 
     const data = await response.json()
     const text =
-      data.text?.replace(/\n/g, "<br>") || "⚠️ No valid response from Gemini."
+      data.text?.replace(/\n/g, "<br>") || "No valid response from Gemini."
 
     messages.value.push({ role: "bot", text })
   } catch (err) {
     console.error("Gemini Cloud Function error:", err)
     messages.value.push({
       role: "bot",
-      text: "❌ Sorry, I couldn't get a response right now.",
+      text: "Sorry, I couldn't get a response right now.",
     })
   } finally {
     loading.value = false

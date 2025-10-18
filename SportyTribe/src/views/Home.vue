@@ -6,7 +6,7 @@
         <p class="lead">Discover programs, events, and a community built for you.</p>
         <div class="mt-4">
           <router-link to="/program" class="btn btn-primary btn-lg me-3" aria-label="Explore available fitness and sports programs">Explore Programs</router-link>
-          <router-link to="/form" class="btn btn-outline-light btn-lg" aria-label="Login or Sign up to your SportyTribe account">Login / Sign Up</router-link>
+          <router-link to="/firelogin" class="btn btn-outline-light btn-lg" aria-label="Login or Sign up to your SportyTribe account">Login / Sign Up</router-link>
         </div>
       </div>
     </section>
