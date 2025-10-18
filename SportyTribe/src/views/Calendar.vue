@@ -11,12 +11,10 @@
 
     <div v-else id="calendar" ref="calendarRef"></div>
 
-    <!-- Status message -->
     <p v-if="statusMessage" :class="statusClass" class="mt-3" aria-live="polite">
       {{ statusMessage }}
     </p>
 
-    <!-- Booking Modal -->
     <div v-if="showBookingForm" class="modal-overlay" @click.self="closeForm">
       <div class="modal-content">
         <h5>Confirm Booking for {{ selectedEvent?.title }}</h5>
@@ -41,12 +39,7 @@
 
           <div class="mb-3">
             <label for="gender" class="form-label">Gender</label>
-            <select
-              id="gender"
-              v-model="formData.gender"
-              class="form-select"
-              required
-            >
+            <select id="gender" v-model="formData.gender" class="form-select" required>
               <option disabled value="">Select gender</option>
               <option>Male</option>
               <option>Female</option>
@@ -64,7 +57,6 @@
       </div>
     </div>
 
-    <!-- Cancel Modal -->
     <div v-if="showCancelForm" class="modal-overlay" @click.self="closeCancel">
       <div class="modal-content">
         <h5>Cancel Booking for {{ cancelEvent?.Event }}</h5>
@@ -77,9 +69,7 @@
         </p>
         <div class="d-flex justify-content-end gap-2">
           <button class="btn btn-secondary" @click="closeCancel">No</button>
-          <button class="btn btn-danger" @click="confirmCancel">
-            Yes, Cancel
-          </button>
+          <button class="btn btn-danger" @click="confirmCancel">Yes, Cancel</button>
         </div>
       </div>
     </div>
@@ -112,7 +102,6 @@ const statusMessage = ref("")
 const statusClass = ref("")
 const auth = getAuth()
 
-// Modal state
 const showBookingForm = ref(false)
 const formData = ref({ name: "", gender: "" })
 const selectedEvent = ref(null)
@@ -123,7 +112,8 @@ const cancelEvent = ref(null)
 const cancelEventRef = ref(null)
 const cancelCalendarEvent = ref(null)
 
-// Watch calendar DOM + data
+let calendarInstance = null
+
 watch([calendarRef, events], ([refEl, ev]) => {
   if (refEl && refEl instanceof HTMLElement && ev.length > 0) initCalendar()
 })
@@ -131,7 +121,6 @@ watch([calendarRef, events], ([refEl, ev]) => {
 onMounted(async () => {
   const user = auth.currentUser
   try {
-    // Load programs
     const programSnapshot = await getDocs(collection(db, "programdetails"))
     const allEvents = programSnapshot.docs.map((doc) => {
       const data = doc.data()
@@ -141,11 +130,10 @@ onMounted(async () => {
         title: data.name,
         start: startDate,
         extendedProps: { location: data.location },
-        backgroundColor: "#007bff", // default blue
+        backgroundColor: "#007bff",
       }
     })
 
-    // Mark user bookings
     if (user) {
       const bookingsRef = collection(db, "adminUserEvents")
       const q = query(bookingsRef, where("email", "==", user.email))
@@ -179,7 +167,7 @@ function initCalendar() {
   if (calendarRef.value.dataset.initialized) return
   calendarRef.value.dataset.initialized = "true"
 
-  const calendar = new Calendar(calendarRef.value, {
+  calendarInstance = new Calendar(calendarRef.value, {
     plugins: [dayGridPlugin, interactionPlugin],
     initialView: "dayGridMonth",
     events: events.value,
@@ -191,7 +179,7 @@ function initCalendar() {
       right: "dayGridMonth,dayGridWeek",
     },
   })
-  calendar.render()
+  calendarInstance.render()
 }
 
 async function handleEventClick(info) {
@@ -225,7 +213,6 @@ async function handleEventClick(info) {
         return
       }
 
-      // open cancel modal
       cancelEvent.value = bookingData
       cancelEventRef.value = bookingId
       cancelCalendarEvent.value = event
@@ -233,7 +220,6 @@ async function handleEventClick(info) {
       return
     }
 
-    // open booking modal
     selectedEvent.value = event
     selectedEventDate.value = selectedDate
     showBookingForm.value = true
@@ -304,6 +290,7 @@ function closeForm() {
   showBookingForm.value = false
   formData.value = { name: "", gender: "" }
 }
+
 function closeCancel() {
   showCancelForm.value = false
   cancelEvent.value = null
@@ -353,5 +340,8 @@ function closeCancel() {
 }
 .text-muted {
   color: #555;
+}
+.text-info {
+  color: #ccff00;
 }
 </style>

@@ -12,6 +12,8 @@ import Resources from '@/views/Resources.vue'
 import DetailedResources from '@/views/DetailedResources.vue'
 import AdminDashboard from '@/views/AdminDashboard.vue'
 import Calendar from '@/views/Calendar.vue'
+import AdminEventCancel from '@/views/AdminEventCancel.vue'
+
 
 const routes = [
    {
@@ -28,6 +30,11 @@ const routes = [
     path: '/program',   
     name: 'Program',
     component: Program
+  },
+   {
+    path: '/admineventcancel',   
+    name: 'AdminEventCancel',
+    component: AdminEventCancel
   },
   {
     path: '/calendar',   

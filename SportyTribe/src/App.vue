@@ -1,5 +1,7 @@
 <script setup>
 import Headernav from './components/headernav.vue';
+import SportyBot from "@/components/SportyBot.vue"
+
 </script>
 <template>
       <div class = "main-container bg-light min-vh-100">
@@ -10,6 +12,8 @@ import Headernav from './components/headernav.vue';
 
     <main id="mainContent" class="main-content py-4" role="main" tabindex="-1">
     <router-view/>
+        <SportyBot />
+
   </main>
     <footer class="footer text-center py-3">
       <small>&copy; 2025 SportyTribe</small>
@@ -52,6 +56,10 @@ nav.navbar {
 main {
   flex: 1;
   padding-top: 2rem;
+}
+.sportybot-widget {
+  position: relative;
+  z-index: 9999;
 }
 
 </style>

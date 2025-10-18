@@ -1,56 +1,118 @@
 <template>
-  <main class="container py-4" role="main">
-    <h1 id="eventsHeading">Nearby Events</h1>
-    <p class="text-muted">Explore events happening near your location.</p>
+  <main class="container py-4">
+    <h1>Nearby Events</h1>
+    <p class="text-muted">Explore upcoming events around you.</p>
 
     <div class="controls mb-3">
-      <label for="radiusSelect" class="me-2"><strong>Show events within:</strong></label>
-      <select id="radiusSelect" v-model="radius" class="form-select d-inline-block w-auto" aria-describedby="radiusHelp">
+      <label for="radiusSelect" class="me-2"><strong>Show within:</strong></label>
+      <select id="radiusSelect" v-model="radius" class="form-select d-inline-block w-auto">
         <option :value="25">25 km</option>
         <option :value="50">50 km</option>
         <option :value="100">100 km</option>
         <option :value="200">200 km</option>
         <option :value="0">All</option>
       </select>
-       <small id="radiusHelp" class="text-muted ms-2">Select a distance range</small>
     </div>
-     <p aria-live="polite" class="visually-hidden">
-      {{ accessibleMessage }}
-    </p>
 
-    <div id="map" class="map" role="application" aria-label="Interactive map showing nearby sporting events. Use tab and arrow keys to navigate."></div>
-   <noscript>
-      <p>Map not available. Please enable JavaScript to view nearby events.</p>
-    </noscript>
+    <p aria-live="polite" class="visually-hidden">{{ accessibleMessage }}</p>
+
+    <div id="map" class="map" role="application" aria-label="Map of nearby events"></div>
+
+    <section v-if="visibleEvents.length" class="event-list mt-4">
+      <h3>Events within {{ radius }} km</h3>
+      <ul class="list-group">
+        <li
+          v-for="ev in visibleEvents"
+          :key="ev.id"
+          class="list-group-item"
+          @click="openModal(ev)"
+          style="cursor: pointer;"
+        >
+          <strong>{{ ev.name }}</strong> — {{ ev.location }}
+          <br />
+          <small>{{ ev.date }}</small>
+        </li>
+      </ul>
+    </section>
+
+    <div v-if="selectedEvent" class="modal-overlay" @click.self="closeModal">
+      <div class="modal-content">
+        <h4>{{ selectedEvent.name }}</h4>
+        <p><strong>Date:</strong> {{ selectedEvent.date }}</p>
+        <p><strong>Location:</strong> {{ selectedEvent.location }}</p>
+
+        <div v-if="selectedEvent.ratings?.length">
+          <p><strong>Ratings:</strong> {{ averageRating(selectedEvent.ratings) }} ⭐</p>
+        </div>
+
+        <div v-if="selectedEvent.reviews?.length">
+          <p><strong>Reviews:</strong></p>
+          <ul>
+            <li v-for="(review, index) in selectedEvent.reviews" :key="index">{{ review }}</li>
+          </ul>
+        </div>
+
+        <div v-else>
+          <p>No reviews yet.</p>
+        </div>
+
+        <div class="d-flex justify-content-end mt-3">
+          <button class="btn btn-secondary" @click="closeModal">Close</button>
+        </div>
+      </div>
+    </div>
   </main>
 </template>
 
 <script setup>
-import { onMounted, ref, watch } from "vue"
-import L from "leaflet"
-import eventsData from "../assets/json/programdetails.json"
+import { ref, onMounted, watch } from "vue";
+import L from "leaflet";
+import { collection, getDocs } from "firebase/firestore";
+import { db } from "@/firebase/init";
 
-const map = ref(null)
-const userLatLng = ref(null)
-const userMarker = ref(null)
-const routeLayer = ref(null)
-const eventMarkers = ref([])
-const radius = ref(50)
+const map = ref(null);
+const userLatLng = ref(null);
+const eventMarkers = ref([]);
+const radius = ref(50);
+const visibleEvents = ref([]);
+const selectedEvent = ref(null);
+const accessibleMessage = ref("");
 
-onMounted(() => {
-  // init map
-  map.value = L.map("map").setView([-25.2744, 133.7751], 5)
-  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    
-  }).addTo(map.value)
+const eventsData = ref([]);
 
-  // get user location
+onMounted(async () => {
+  await loadEvents();
+  initMap();
+});
+
+async function loadEvents() {
+  const snapshot = await getDocs(collection(db, "programdetails"));
+  eventsData.value = snapshot.docs
+    .map((doc) => {
+      const data = doc.data();
+      return {
+        id: data.id || doc.id,
+        name: data.name || "Unnamed Event",
+        date: data.date || "No date available",
+        location: data.location || "No location available",
+        lat: parseFloat(data.lat),
+        lng: parseFloat(data.lng),
+        ratings: data.ratings || [],
+        reviews: data.reviews || [],
+      };
+    })
+    .filter((e) => !isNaN(e.lat) && !isNaN(e.lng));
+}
+
+function initMap() {
+  map.value = L.map("map").setView([-25.2744, 133.7751], 5);
+  L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map.value);
+
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (pos) => {
-        userLatLng.value = [pos.coords.latitude, pos.coords.longitude]
-        userMarker.value = L.marker(userLatLng.value, {
-          title: "You are here",
+        userLatLng.value = [pos.coords.latitude, pos.coords.longitude];
+        L.marker(userLatLng.value, {
           icon: L.icon({
             iconUrl: "https://cdn-icons-png.flaticon.com/512/149/149060.png",
             iconSize: [40, 40],
@@ -58,33 +120,36 @@ onMounted(() => {
         })
           .addTo(map.value)
           .bindPopup("📍 You are here")
-          .openPopup()
-        map.value.setView(userLatLng.value, 8)
-        updateMarkers()
-      },
-      () => updateMarkers() // if denied, just show all events
-    )
-  } else updateMarkers()
-})
+          .openPopup();
 
-// watch radius change
-watch(radius, () => updateMarkers())
+        map.value.setView(userLatLng.value, 10);
+        updateMarkers();
+      },
+      () => updateMarkers()
+    );
+  } else {
+    updateMarkers();
+  }
+}
+
+watch(radius, updateMarkers);
 
 function updateMarkers() {
-  // clear existing markers
-  eventMarkers.value.forEach(m => map.value.removeLayer(m))
-  eventMarkers.value = []
+  eventMarkers.value.forEach((m) => map.value.removeLayer(m));
+  eventMarkers.value = [];
+  visibleEvents.value = [];
 
-  eventsData.forEach((event) => {
-    const eventLatLng = [event.lat, event.lng]
-    let withinRadius = true
+  eventsData.value.forEach((event) => {
+    const eventLatLng = [event.lat, event.lng];
+    let withinRadius = true;
 
     if (userLatLng.value && radius.value > 0) {
-      const d = getDistance(userLatLng.value, eventLatLng)
-      withinRadius = d <= radius.value
+      const d = getDistance(userLatLng.value, eventLatLng);
+      withinRadius = d <= radius.value;
     }
 
     if (withinRadius) {
+      visibleEvents.value.push(event);
       const marker = L.marker(eventLatLng, {
         icon: L.icon({
           iconUrl: "https://cdn-icons-png.flaticon.com/512/684/684908.png",
@@ -92,38 +157,41 @@ function updateMarkers() {
         }),
       })
         .addTo(map.value)
-        .bindPopup(
-          `<b>${event.name}</b><br>${event.location}<br>${event.date}<br><button id="route-${event.id}" class="route-btn">Get Directions</button>`
-        )
+        .on("click", () => {
+          selectedEvent.value = event;
+        });
 
-      marker.on("popupopen", () => {
-        const btn = document.getElementById(`route-${event.id}`)
-        if (btn && userLatLng.value) btn.addEventListener("click", () => showRoute(userLatLng.value, eventLatLng))
-        else if (!userLatLng.value) alert("Enable location access to view directions.")
-      })
-
-      eventMarkers.value.push(marker)
+      eventMarkers.value.push(marker);
     }
-  })
+  });
+
+  accessibleMessage.value = `${visibleEvents.value.length} events found within ${radius.value} kilometers.`;
 }
 
-function showRoute(start, end) {
-  if (routeLayer.value) map.value.removeLayer(routeLayer.value)
-  routeLayer.value = L.polyline([start, end], { color: "blue", weight: 4 }).addTo(map.value)
-  map.value.fitBounds([start, end], { padding: [50, 50] })
-}
-
-// simple haversine distance (km)
 function getDistance([lat1, lon1], [lat2, lon2]) {
-  const R = 6371
-  const dLat = ((lat2 - lat1) * Math.PI) / 180
-  const dLon = ((lon2 - lon1) * Math.PI) / 180
+  const R = 6371;
+  const dLat = ((lat2 - lat1) * Math.PI) / 180;
+  const dLon = ((lon2 - lon1) * Math.PI) / 180;
   const a =
     Math.sin(dLat / 2) ** 2 +
     Math.cos((lat1 * Math.PI) / 180) *
       Math.cos((lat2 * Math.PI) / 180) *
-      Math.sin(dLon / 2) ** 2
-  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)))
+      Math.sin(dLon / 2) ** 2;
+  return R * (2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a)));
+}
+
+function averageRating(ratings) {
+  if (!ratings.length) return "No ratings";
+  const avg = ratings.reduce((a, b) => a + b, 0) / ratings.length;
+  return avg.toFixed(1);
+}
+
+function openModal(event) {
+  selectedEvent.value = event;
+}
+
+function closeModal() {
+  selectedEvent.value = null;
 }
 </script>
 
@@ -134,27 +202,31 @@ function getDistance([lat1, lon1], [lat2, lon2]) {
   border-radius: 10px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
-.legend {
-  background: #f8f9fa;
+
+.event-list {
+  background: #fff;
   padding: 1rem;
-  border-radius: 0.5rem;
+  border-radius: 10px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
 }
-.route-btn:focus,
-select:focus {
-  outline: 3px solid #fbc02d;
-  outline-offset: 3px;
+
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000;
 }
-.route-btn {
-  margin-top: 6px;
-  background: #007bff;
-  color: white;
-  border: none;
-  padding: 5px 8px;
-  border-radius: 5px;
-  cursor: pointer;
-}
-.route-btn:hover {
-  background: #0056b3;
+
+.modal-content {
+  background: #fff;
+  border-radius: 10px;
+  padding: 1.5rem;
+  width: 90%;
+  max-width: 400px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 .visually-hidden {

@@ -27,9 +27,9 @@
         <li v-if="userRole === 'user'" class="nav-item">   
           <router-link to="/nearbyevents" class="nav-link px-3" active-class="active">Nearby Events</router-link>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <router-link to="/aboutus" class="nav-link px-3" active-class="active">About Us</router-link>
-        </li>
+        </li> -->
         
           <li v-if="!isLoggedIn" class="nav-item">
           <router-link class="btn btn-primary ms-2" to="/Firelogin" active-class="active">Login</router-link>
@@ -58,7 +58,7 @@
 
 
             <li v-if="userRole === 'admin'" class="nav-item">
-              <router-link to="/admin-dashboard" class="nav-link px-3 text-warning fw-bold">Admin Profile</router-link>
+              <router-link to="/admineventcancel" class="nav-link px-3 text-warning fw-bold">Admin Event Cancel</router-link>
             </li>
       </ul>
         </div>
