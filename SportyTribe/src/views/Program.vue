@@ -7,16 +7,15 @@ import Button from "primevue/button"
 
 const events = ref([])
 const filters = ref({ global: { value: null } })
-const pastReviews1 = ref("")
 const liveMessage = ref("")
 const loading = ref(true)
 
 onMounted(async () => {
   try {
     const querySnapshot = await getDocs(collection(db, "programdetails"))
-    events.value = querySnapshot.docs.map(doc => ({
-      id: doc.id,
-      ...doc.data()
+    events.value = querySnapshot.docs.map(d => ({
+      docId: d.id,
+      ...d.data(),
     }))
   } catch (err) {
     console.error("Error loading Firestore data:", err)
@@ -30,10 +29,11 @@ const formatDate = (dateString) => format(new Date(dateString), "dd/MM/yyyy")
 const ratingUpdation = async (event, addRating) => {
   if (!event.ratings) event.ratings = []
   event.ratings.push(addRating)
+
   liveMessage.value = `Rating added for ${event.name}. Average rating now ${getAverage(event)}.`
 
   try {
-    await updateDoc(doc(db, "programdetails", event.id), { ratings: event.ratings })
+    await updateDoc(doc(db, "programdetails", event.docId), { ratings: event.ratings })
   } catch (error) {
     console.error("Error updating rating:", error)
   }
@@ -46,29 +46,29 @@ const getAverage = (event) => {
 }
 
 const customerReview = async (event) => {
-  if (!event.reviews) event.reviews = []
-  const newReview = pastReviews1.value.trim()
+  const newReview = (event.tempReview || "").trim()
 
   if (newReview.length < 3) {
     liveMessage.value = "Review must contain at least three characters."
     return
   }
 
+  if (!event.reviews) event.reviews = []
   event.reviews.push(newReview)
   liveMessage.value = `New review added for ${event.name}.`
-  pastReviews1.value = ""
+  event.tempReview = "" 
 
   try {
-    await updateDoc(doc(db, "programdetails", event.id), { reviews: event.reviews })
+    await updateDoc(doc(db, "programdetails", event.docId), { reviews: event.reviews })
   } catch (error) {
     console.error("Error updating review:", error)
   }
 }
+
 </script>
 
 <template>
   <main class="container py-5" role="main">
-    <h1 id="programHeading">Upcoming Programs & Events</h1>
     <p class="text-muted">Browse upcoming sporting community activities!</p>
 
     <div v-if="loading" class="alert alert-info mt-3" role="status">
@@ -133,7 +133,7 @@ const customerReview = async (event) => {
                 <label :for="'review-' + data.name" class="visually-hidden">Write a review for {{ data.name }}</label>
                 <InputText
                   :id="'review-' + data.name"
-                  v-model="pastReviews1"
+                  v-model= "data.tempReview"
                   placeholder="Add a review"
                   aria-label="Add a review for {{ data.name }}"
                   class="me-2"

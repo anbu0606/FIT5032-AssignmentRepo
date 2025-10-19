@@ -1,6 +1,5 @@
 <template>
   <main class="container py-5" role="main">
-    <h1 id="pageTitle">Admin Analytics Dashboard</h1>
     <p class="text-muted">
       Interactive charts showing live event registrations, filterable by date, status, and time period.
     </p>

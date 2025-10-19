@@ -1,6 +1,5 @@
 <template>
   <main class="container py-4">
-    <h1>Nearby Events</h1>
     <p class="text-muted">Explore upcoming events around you.</p>
 
     <div class="controls mb-3">
@@ -28,7 +27,7 @@
           @click="openModal(ev)"
           style="cursor: pointer;"
         >
-          <strong>{{ ev.name }}</strong> — {{ ev.location }}
+          <strong>{{ ev.name }}</strong> - {{ ev.location }}
           <br />
           <small>{{ ev.date }}</small>
         </li>
@@ -42,7 +41,12 @@
         <p><strong>Location:</strong> {{ selectedEvent.location }}</p>
 
         <div v-if="selectedEvent.ratings?.length">
-          <p><strong>Ratings:</strong> {{ averageRating(selectedEvent.ratings) }} ⭐</p>
+          <p class="d-flex align-items-center gap-1">
+  <strong>Ratings:</strong>
+  {{ averageRating(selectedEvent.ratings) }}
+  <Icon icon="mdi:star" class="text-warning" width="18" height="18" />
+</p>
+
         </div>
 
         <div v-if="selectedEvent.reviews?.length">
@@ -69,6 +73,7 @@ import { ref, onMounted, watch } from "vue";
 import L from "leaflet";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/init";
+import { Icon } from "@iconify/vue"
 
 const map = ref(null);
 const userLatLng = ref(null);
@@ -119,7 +124,7 @@ function initMap() {
           }),
         })
           .addTo(map.value)
-          .bindPopup("📍 You are here")
+          .bindPopup('<div style="display:flex;align-items:center;gap:4px;"><span><svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="#007bff" viewBox="0 0 16 16"><path d="M8 0a5.53 5.53 0 0 0-5.5 5.5c0 3.037 5.5 10.5 5.5 10.5s5.5-7.463 5.5-10.5A5.53 5.53 0 0 0 8 0zm0 8A2.5 2.5 0 1 1 8 3a2.5 2.5 0 0 1 0 5z"/></svg></span> <span>You are here</span></div>')
           .openPopup();
 
         map.value.setView(userLatLng.value, 10);

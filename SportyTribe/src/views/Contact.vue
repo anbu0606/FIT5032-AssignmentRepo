@@ -1,6 +1,5 @@
 <template>
  <main class="container mt-5" role="main">
-    <h1 id="pageTitle">Contact Us</h1>
     <form @submit.prevent="sendEmail" class="p-4 shadow rounded bg-white" aria-labelledby="pageTitle">
       <div class="mb-3">
         <label for="email">Your Email <span class="text-danger">*</span></label>

@@ -65,7 +65,6 @@ const exportPDF = () => {
 
 <template>
   <main class="container py-5" role="main">
-    <h1 id="pageTitle">Registered Users & Their Events</h1>
     <p id="pageDesc" class="text-muted mb-4">
       View, sort, and search user event registrations below.
     </p>

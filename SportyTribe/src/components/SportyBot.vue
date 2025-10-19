@@ -6,13 +6,17 @@
       @click="isOpen = true"
       title="Chat with SportyBot"
     >
-      💬
+     <MessageSquare :size="28" stroke-width="2.5" />
     </button>
 
     <div v-if="isOpen" class="chat-window shadow">
       <div class="chat-header">
-        <h5>SportyBot 🏃‍♂️</h5>
-        <button class="close-btn" @click="isOpen = false">✕</button>
+        <h5 class="flex items-center gap-2">
+  <Activity :size="20" stroke-width="2" /> SportyBot
+</h5>
+        <button class="close-btn" @click="isOpen = false" title="Close chat">
+  <X :size="20" stroke-width="2.5" />
+</button>
       </div>
 
       <div class="chat-box" ref="chatBox">
@@ -42,6 +46,8 @@
 
 <script setup>
 import { ref, nextTick } from "vue"
+import { MessageSquare, X, Activity } from "lucide-vue-next"
+
 
 const GEMINI_FUNCTION_URL =
   "https://us-central1-sportytribe-45a76.cloudfunctions.net/getGeminiResponse"
@@ -132,6 +138,11 @@ const sendMessage = async () => {
   border: 1px solid #ddd;
   z-index: 10000;
 }
+.chat-toggle-btn svg,
+.close-btn svg {
+  vertical-align: middle;
+}
+
 .chat-header {
   background: #007bff;
   color: white;

@@ -1,6 +1,5 @@
 <template>
   <main class="container py-5">
-    <h1>Event Booking Calendar</h1>
     <p class="text-muted">
       Click an event to book or cancel. You can only have one booking per date.
     </p>

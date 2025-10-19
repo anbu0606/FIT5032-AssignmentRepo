@@ -1,7 +1,5 @@
 <template>
   <div class="container mt-5">
-    <h1>Cancel Event</h1>
-
     <div class="mb-3">
       <label for="eventSelect">Select Event to Cancel</label>
       <select id="eventSelect" v-model="selectedEvent" class="form-control">

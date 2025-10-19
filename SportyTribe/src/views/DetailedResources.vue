@@ -1,7 +1,6 @@
 <template>
   <main class="container py-5" role="main">
     <div v-if="resource">
-      <h1>{{ resource.title }}</h1>
       <p class="lead">{{ resource.content }}</p>
 
       <div class="mt-4">
