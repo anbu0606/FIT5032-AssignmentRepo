@@ -40,10 +40,9 @@ const loading = ref(false)
 const statusMessage = ref("")
 const statusClass = ref("")
 
-// Bulk email function URL
+// Bulk email serverless function URL
 const functionURL = "https://sendbulkeventemail-c5melirmcq-uc.a.run.app"
 
-// Fetch unique events from Firebase
 onMounted(async () => {
   try {
     const snapshot = await getDocs(collection(db, "adminUserEvents"))
@@ -58,6 +57,7 @@ onMounted(async () => {
   }
 })
 
+// Cancel Event Function
 const cancelEvent = async () => {
   if (!selectedEvent.value) return
 
@@ -66,7 +66,7 @@ const cancelEvent = async () => {
   statusClass.value = ""
 
   try {
-    // Get all registered participants for the selected event
+    // Query all participants registered for the selected event
     const q = query(
       collection(db, "adminUserEvents"),
       where("Event", "==", selectedEvent.value),
@@ -74,6 +74,7 @@ const cancelEvent = async () => {
     )
     const snapshot = await getDocs(q)
 
+    // If no participants, show the warning and exit
     if (snapshot.empty) {
       statusMessage.value = "No registered participants found for this event."
       statusClass.value = "text-warning"
@@ -81,7 +82,6 @@ const cancelEvent = async () => {
       return
     }
 
-    // Prepare participants array for bulk email
     const participants = snapshot.docs.map(docSnap => {
       const data = docSnap.data()
       return {
@@ -90,7 +90,6 @@ const cancelEvent = async () => {
       }
     })
 
-    // Use the first participant for event details
     const eventData = snapshot.docs[0].data()
     const emailTemplate = `
 Hello {{name}},
@@ -107,7 +106,7 @@ Best regards,
 Admin Team
 `
 
-    // Send bulk email in one request
+    // Send bulk email via serverless function
     const res = await fetch(functionURL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -122,7 +121,7 @@ Admin Team
       throw new Error(`Bulk email failed with status ${res.status}`)
     }
 
-    // Update all participant statuses in Firebase
+    // Update all participant statuses to "Cancelled" in Firestore
     const updatePromises = snapshot.docs.map(docSnap =>
       updateDoc(doc(db, "adminUserEvents", docSnap.id), { Status: "Cancelled" })
     )
@@ -149,5 +148,10 @@ Admin Team
 }
 .text-warning {
   color: orange;
+}
+
+button:focus {
+  outline: 3px solid #1482ff;
+  outline-offset: 2px;
 }
 </style>

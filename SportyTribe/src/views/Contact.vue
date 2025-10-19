@@ -1,6 +1,7 @@
 <template>
  <main class="container mt-5" role="main">
     <form @submit.prevent="sendEmail" class="p-4 shadow rounded bg-white" aria-labelledby="pageTitle">
+      <!-- Email input -->
       <div class="mb-3">
         <label for="email">Your Email <span class="text-danger">*</span></label>
         <input 
@@ -14,6 +15,7 @@
         />
       </div>
 
+      <!-- Subject input -->
       <div class="mb-3">
         <label for="subject">Subject <span class="text-danger">*</span></label>
         <input 
@@ -39,7 +41,8 @@
           placeholder="Type your message here"
         ></textarea>
       </div>
-
+      
+      <!-- File attachment -->
       <div class="mb-3">
         <label for="fileInput">Attach a file (optional)</label>
         <input 
@@ -77,6 +80,7 @@
 </template>
 
 <script setup>
+// Contact Form Logic
 import { ref } from "vue"
 
 const email = ref("")
@@ -87,6 +91,7 @@ const loading = ref(false)
 const statusMessage = ref("")
 const statusClass = ref("")
 
+// URL of backend function for sendgrid handling email
 const functionURL = "https://sendemail-c5melirmcq-uc.a.run.app"
 
 const onFileChange = (e) => {
@@ -94,6 +99,7 @@ const onFileChange = (e) => {
   if (selected) file.value = selected
 }
 
+// Submit form data
 const sendEmail = async () => {
   loading.value = true
   statusMessage.value = ""
@@ -121,7 +127,6 @@ ${message.value}
 
 Submitted on: ${new Date().toLocaleString()}
     `
-
     const res = await fetch(functionURL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -150,6 +155,7 @@ Submitted on: ${new Date().toLocaleString()}
   }
 }
 
+//convert file to Base64
 const toBase64 = (file) =>
   new Promise((resolve, reject) => {
     const reader = new FileReader()
@@ -163,6 +169,10 @@ const toBase64 = (file) =>
 form {
   max-width: 600px;
   margin: auto;
+  background: #ffffff;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 2rem;
+  border-radius: 15px;
 }
 .text-danger {
   color: #b30000;

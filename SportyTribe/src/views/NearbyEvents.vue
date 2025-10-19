@@ -2,6 +2,7 @@
   <main class="container py-4">
     <p class="text-muted">Explore upcoming events around you.</p>
 
+    <!-- Radius filter control -->
     <div class="controls mb-3">
       <label for="radiusSelect" class="me-2"><strong>Show within:</strong></label>
       <select id="radiusSelect" v-model="radius" class="form-select d-inline-block w-auto">
@@ -13,10 +14,12 @@
       </select>
     </div>
 
+    <!-- Accessibility:number of events found -->
     <p aria-live="polite" class="visually-hidden">{{ accessibleMessage }}</p>
 
     <div id="map" class="map" role="application" aria-label="Map of nearby events"></div>
-
+   
+    <!-- Event List Section -->
     <section v-if="visibleEvents.length" class="event-list mt-4">
       <h3>Events within {{ radius }} km</h3>
       <ul class="list-group">
@@ -34,6 +37,7 @@
       </ul>
     </section>
 
+    <!-- Event Modal -->
     <div v-if="selectedEvent" class="modal-overlay" @click.self="closeModal">
       <div class="modal-content">
         <h4>{{ selectedEvent.name }}</h4>
@@ -46,9 +50,7 @@
   {{ averageRating(selectedEvent.ratings) }}
   <Icon icon="mdi:star" class="text-warning" width="18" height="18" />
 </p>
-
         </div>
-
         <div v-if="selectedEvent.reviews?.length">
           <p><strong>Reviews:</strong></p>
           <ul>
@@ -69,7 +71,9 @@
 </template>
 
 <script setup>
+// Events Map Page Logic
 import { ref, onMounted, watch } from "vue";
+// Leaflet for interactive map
 import L from "leaflet";
 import { collection, getDocs } from "firebase/firestore";
 import { db } from "@/firebase/init";
@@ -109,6 +113,7 @@ async function loadEvents() {
     .filter((e) => !isNaN(e.lat) && !isNaN(e.lng));
 }
 
+// Initialize Leaflet map and user location
 function initMap() {
   map.value = L.map("map").setView([-25.2744, 133.7751], 5);
   L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png").addTo(map.value);
@@ -137,8 +142,10 @@ function initMap() {
   }
 }
 
+// Watch radius changes and update markers
 watch(radius, updateMarkers);
 
+// Add markers to map and filter events
 function updateMarkers() {
   eventMarkers.value.forEach((m) => map.value.removeLayer(m));
   eventMarkers.value = [];
@@ -173,6 +180,7 @@ function updateMarkers() {
   accessibleMessage.value = `${visibleEvents.value.length} events found within ${radius.value} kilometers.`;
 }
 
+//Calculating distance in km between two lat/lng
 function getDistance([lat1, lon1], [lat2, lon2]) {
   const R = 6371;
   const dLat = ((lat2 - lat1) * Math.PI) / 180;
@@ -202,14 +210,15 @@ function closeModal() {
 
 <style scoped>
 .map {
-  height: 500px;
+  height: 350px;
   width: 100%;
-  border-radius: 10px;
+  border-radius: 20px;
   box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
 .event-list {
-  background: #fff;
+  width: 100%;
+  background: #cafeff;
   padding: 1rem;
   border-radius: 10px;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
@@ -226,10 +235,10 @@ function closeModal() {
 }
 
 .modal-content {
-  background: #fff;
+  background: #ffffff;
   border-radius: 10px;
   padding: 1.5rem;
-  width: 90%;
+  width: 80%;
   max-width: 400px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
@@ -243,5 +252,11 @@ function closeModal() {
   overflow: hidden;
   clip: rect(0, 0, 0, 0);
   border: 0;
+}
+
+
+.list-group-item:hover {
+  background-color: #3ea5ff;
+  cursor: pointer;
 }
 </style>

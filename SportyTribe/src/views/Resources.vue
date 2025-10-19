@@ -4,12 +4,13 @@
       Explore useful guides and information for your active lifestyle. Click on any card to learn more.
     </p>
 
+    <!-- Resource cards loop -->
     <div
       v-for="resource in resourcesList"
       :key="resource.id"
       class="card mb-4 shadow-sm p-3 resource-card"
       role="link"
-      tabindex="0"
+      tabindex="0" 
       @click="goToResource(resource.id)"
       @keypress.enter="goToResource(resource.id)"
       @keypress.space.prevent="goToResource(resource.id)"
@@ -32,6 +33,7 @@
 </template>
 
 <script setup>
+// Resources Page Logic
 import { ref } from "vue"
 import { useRouter } from "vue-router"
 import resources from "../assets/json/resources.json"

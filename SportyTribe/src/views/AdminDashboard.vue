@@ -1,10 +1,8 @@
 <template>
   <main class="container py-5" role="main">
-    <p class="text-muted">
-      Interactive charts showing live event registrations, filterable by date, status, and time period.
-    </p>
-
+    <!-- customize chart view -->
     <div class="filters d-flex flex-wrap gap-3 align-items-end mb-4">
+      <!-- Chart type selection -->
       <div>
         <label for="chartType" class="form-label"><strong>Chart Type</strong></label>
         <select id="chartType" v-model="selectedChart" class="form-select">
@@ -64,6 +62,7 @@
 </template>
 
 <script setup>
+// Event Charts Page
 import { ref, computed, onMounted } from "vue"
 import { Bar, Pie } from "vue-chartjs"
 import {
@@ -111,7 +110,7 @@ const filteredEvents = computed(() =>
     return matchStatus && matchFrom && matchTo
   })
 )
-
+// Group events by period (monthly/yearly)
 const groupByPeriod = (events) => {
   const groups = {}
   events.forEach(e => {
@@ -126,6 +125,7 @@ const groupByPeriod = (events) => {
   return groups
 }
 
+// Aggregate data for charts
 const locationCounts = computed(() => {
   const data = {}
   filteredEvents.value.forEach(e => {
@@ -190,7 +190,7 @@ const pieChartOptions = {
 
 <style scoped>
 .filters {
-  background: #f8f9fa;
+  background: #88c4ff;
   border-radius: 10px;
   padding: 1rem;
 }
@@ -209,7 +209,7 @@ input[type="date"] {
 }
 select:focus,
 input:focus {
-  outline: 3px solid #00b7ff;
+  outline: 3px solid #06d6ff;
   outline-offset: 2px;
 }
 </style>

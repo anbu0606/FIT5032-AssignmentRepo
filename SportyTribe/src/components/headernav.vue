@@ -1,4 +1,5 @@
 <template>
+  <!--  role is banner for accessibility -->
   <header class="sporty-navbar shadow sticky-top" role="banner" aria-label="Site Header">
     <div class="container-fluid">
       <nav class="navbar navbar-expand-md navbar-dark" aria-label="Main Navigation">
@@ -24,7 +25,8 @@
             <li class="nav-item">
               <router-link to="/home" class="nav-link px-3" active-class="active">Home</router-link>
             </li>
-
+            
+            <!-- User-Specific Links -->
             <li v-if="userRole === 'user'" class="nav-item">
               <router-link to="/program" class="nav-link px-3" active-class="active">Program</router-link>
             </li>
@@ -45,6 +47,7 @@
               <router-link to="/contact" class="nav-link px-3" active-class="active">Contact Us</router-link>
             </li>
 
+            <!-- Admin-Specific Links -->
             <li v-if="userRole === 'admin'" class="nav-item">
               <router-link to="/admindashboard" class="nav-link px-3 text-warning fw-bold" active-class="active">Admin Dashboard</router-link>
             </li>

@@ -2,7 +2,7 @@
   <main class="container-fluid mt-5" role="main">
     <div class="row justify-content-center">
       <div class="col-12 col-lg-6">
-        <h1 class="text-center" id="loginTitle">SportyTribe Login</h1>
+        <h1 class="text-center" id="loginTitle">SportyTribe</h1>
         <form
           v-if="!isLoggedIn"
           @submit.prevent="signin"

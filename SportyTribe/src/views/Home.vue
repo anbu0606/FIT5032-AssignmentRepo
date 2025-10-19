@@ -5,6 +5,7 @@
       aria-labelledby="homeHeading"
       :style="{ backgroundImage: `url(${currentImage})` }"
     >
+          <!--  overlay for text readability -->
       <div class="overlay"></div>
       <div class="container position-relative z-2">
         <h1 id="homeHeading" class="display-4 fw-bold fade-in">
@@ -51,6 +52,7 @@
 </template>
 
 <script setup>
+// Home Page Logic
 import { ref, onMounted, onBeforeUnmount } from 'vue'
 
 import img1 from '@/assets/fitbg.png'

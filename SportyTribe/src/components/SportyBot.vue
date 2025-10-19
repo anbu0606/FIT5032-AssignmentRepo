@@ -19,6 +19,7 @@
 </button>
       </div>
 
+      <!-- Chat Messages -->
       <div class="chat-box" ref="chatBox">
         <div
           v-for="(msg, index) in messages"
@@ -29,6 +30,7 @@
         </div>
       </div>
 
+      <!-- Chat Input -->
       <form @submit.prevent="sendMessage" class="chat-input">
         <textarea
           v-model="userInput"
@@ -48,7 +50,7 @@
 import { ref, nextTick } from "vue"
 import { MessageSquare, X, Activity } from "lucide-vue-next"
 
-
+// URL of backend function handling Gemini AI responses
 const GEMINI_FUNCTION_URL =
   "https://us-central1-sportytribe-45a76.cloudfunctions.net/getGeminiResponse"
 
@@ -58,6 +60,9 @@ const messages = ref([])
 const loading = ref(false)
 const chatBox = ref(null)
 
+/**
+ * Sends a message to the Gemini AI backend and appends response
+ */
 const sendMessage = async () => {
   const question = userInput.value.trim()
   if (!question) return
@@ -72,6 +77,7 @@ const sendMessage = async () => {
     return
   }
 
+  // Add user message to chat
   messages.value.push({ role: "user", text: question })
   userInput.value = ""
   loading.value = true
@@ -79,6 +85,7 @@ const sendMessage = async () => {
   await nextTick(() => (chatBox.value.scrollTop = chatBox.value.scrollHeight))
 
   try {
+    // Call Gemini AI Cloud Function
     const response = await fetch(GEMINI_FUNCTION_URL, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
@@ -89,6 +96,7 @@ const sendMessage = async () => {
     const text =
       data.text?.replace(/\n/g, "<br>") || "No valid response from Gemini."
 
+    // Add bot response to messages
     messages.value.push({ role: "bot", text })
   } catch (err) {
     console.error("Gemini Cloud Function error:", err)

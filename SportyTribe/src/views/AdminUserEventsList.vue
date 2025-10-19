@@ -48,6 +48,9 @@ const exportCSV = () => {
   URL.revokeObjectURL(url)
 }
 
+/**
+ * Export user event data as a PDF file using jsPDF and autoTable
+ */
 const exportPDF = () => {
   if (!userEvents.value.length) return
   const doc = new jsPDF()
@@ -65,24 +68,15 @@ const exportPDF = () => {
 
 <template>
   <main class="container py-5" role="main">
-    <p id="pageDesc" class="text-muted mb-4">
-      View, sort, and search user event registrations below.
-    </p>
-
     <div class="d-flex justify-content-end mb-3 gap-2 flex-wrap">
-      <button
-        class="btn btn-success"
-        @click="exportCSV"
-        aria-label="Export table data as CSV file"
-      >
+      <button class="btn btn-success" @click="exportCSV" aria-label="Export table data as CSV file" >
         Export as CSV
       </button>
       <button
         class="btn btn-danger"
         @click="exportPDF"
         aria-label="Export table data as PDF file"
-      >
-        Export as PDF
+      > Export as PDF
       </button>
     </div>
 
@@ -97,12 +91,13 @@ const exportPDF = () => {
       />
     </div>
 
+    <!-- Data Table -->
     <DataTable
       v-if="!loading"
       :value="userEvents"
       :filters="filters"
       paginator
-      :rows="10"
+      :rows="4"
       :rowsPerPageOptions="[10, 20, 50]"
       sortMode="multiple"
       filterDisplay="menu"
@@ -112,14 +107,14 @@ const exportPDF = () => {
       aria-labelledby="pageTitle pageDesc"
       aria-label="Registered user event table"
     >
-      <Column field="name" header="User Name" sortable filter filterPlaceholder="Search by name" style="width: 20%" />
-      <Column field="email" header="Email" sortable filter filterPlaceholder="Search by email" style="width: 25%" />
-      <Column field="Event" header="Registered Event" sortable filter filterPlaceholder="Search by event" style="width: 20%" />
-      <Column field="date" header="Event Date" sortable style="width: 15%">
+      <Column field="name" header="User Name" sortable filter filterPlaceholder="Search by name" style="width: 7%" />
+      <Column field="email" header="Email" sortable filter filterPlaceholder="Search by email" style="width: 6%" />
+      <Column field="Event" header="Registered Event" sortable filter filterPlaceholder="Search by event" style="width: 5%" />
+      <Column field="date" header="Event Date" sortable style="width: 5%">
         <template #body="{ data }">{{ formatDate(data.date) }}</template>
       </Column>
-      <Column field="Location" header="Location" sortable filter filterPlaceholder="Search by location" style="width: 15%" />
-      <Column field="Status" header="Status" sortable filter filterPlaceholder="Search by status" style="width: 10%">
+      <Column field="Location" header="Location" sortable filter filterPlaceholder="Search by location" style="width: 5%" />
+      <Column field="Status" header="Status" sortable filter filterPlaceholder="Search by status" style="width: 5%">
         <template #body="{ data }">
           <span :class="['badge', getStatusClass(data.Status)]">{{ data.Status }}</span>
         </template>

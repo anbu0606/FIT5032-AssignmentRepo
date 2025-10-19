@@ -1,3 +1,11 @@
+/**
+ * This file contains multiple Firebase functions for:
+ *   Sending individual and bulk emails via SendGrid
+ *   Validating user event registrations
+ *   Auto-completing past events
+ *   Responding to user queries using Gemini AI API
+ */
+
 const { onRequest } = require("firebase-functions/v2/https");
 const { onDocumentCreated } = require("firebase-functions/v2/firestore");
 const { defineSecret } = require("firebase-functions/params");
@@ -7,16 +15,20 @@ const sgMail = require("@sendgrid/mail");
 const admin = require("firebase-admin");
 const fetch = require("node-fetch");
 
+// Initialize Firebase Admin SDK
 admin.initializeApp();
 
+// Defining secrets for secure API keys
 const SENDGRID_API_KEY = defineSecret("SENDGRID_API_KEY");
 const GEMINI_API_KEY = defineSecret("GEMINI_API_KEY");
 
+//sendEmail: Handles sending a single email via SendGrid
 exports.sendEmail = onRequest(
   {
     secrets: [SENDGRID_API_KEY],
   },
   async (req, res) => {
+    // CORS configuration: Allow only specific origins
     const allowedOrigins = [
       "http://localhost:5173",
       "https://fit5032-assignmentrepo.pages.dev",
@@ -81,6 +93,7 @@ exports.sendEmail = onRequest(
   }
 );
 
+// sendBulkEventEmail: Sends bulk emails to event participants
 exports.sendBulkEventEmail = onRequest(
   {
     secrets: [SENDGRID_API_KEY],
@@ -138,7 +151,10 @@ exports.sendBulkEventEmail = onRequest(
   }
 );
 
-
+/**
+ validateBookingData: Validates event registration document
+ Updates document status to "Registered" or "Pending Review"
+ */
 exports.validateBookingData = onDocumentCreated(
   "adminUserEvents/{docId}",
   async (event) => {
@@ -181,6 +197,8 @@ exports.validateBookingData = onDocumentCreated(
   }
 );
 
+
+//autoCompletePastEvents: Automatically mark past events as Completed
 exports.autoCompletePastEvents = onSchedule("every 24 hours", async () => {
   const db = admin.firestore();
   const today = new Date();
@@ -216,6 +234,8 @@ exports.autoCompletePastEvents = onSchedule("every 24 hours", async () => {
   }
 });
 
+
+//getGeminiResponse: Sends questions to Gemini AI API
 exports.getGeminiResponse = onRequest(
   {
     secrets: [GEMINI_API_KEY],
